@@ -12,30 +12,41 @@
     --nav-height: 75px;
 }
 
-/* --- BASE --- */
+/* --- BASE Y ADAPTACIÓN MÓVIL (PANTALLA COMPLETA) --- */
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 }
 
-body {
+html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    width: 100%;
+    height: 100dvh; /* Magia para móviles: Alto dinámico exacto */
+    overflow: hidden; /* Evita que la app web entera rebote */
     background-color: var(--dark-deep);
     color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     line-height: 1.5;
-    overflow-x: hidden;
-    user-select: none;
+    user-select: none; /* Evita que el usuario seleccione texto por accidente */
+    -webkit-font-smoothing: antialiased;
 }
 
-/* --- SISTEMA DE VISTAS (CORREGIDO) --- */
+/* --- CONTENEDOR PRINCIPAL (SCROLL INTERNO) --- */
+.app-shell {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Permite el desplazamiento vertical solo aquí */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Scroll nativo y fluido en iOS */
+    padding-bottom: calc(var(--nav-height) + 30px); /* Espacio para que la navbar no tape contenido */
+}
+
+/* --- SISTEMA DE VISTAS --- */
 .view {
     display: none !important; /* Oculto por defecto */
     width: 100%;
-    min-height: 100vh;
     padding: 20px;
-    padding-bottom: 110px;
     opacity: 0;
 }
 
@@ -77,7 +88,7 @@ body {
     border: 1px solid rgba(0, 136, 204, 0.2);
 }
 
-/* --- TARJETAS (STYLE UPGRADE) --- */
+/* --- TARJETAS --- */
 .main-card {
     background: var(--card-bg);
     border-radius: 24px;
@@ -96,15 +107,17 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-/* --- NAVEGACIÓN INFERIOR (ESTILO FLOTANTE) --- */
-.nav-bar {
+/* --- NAVEGACIÓN INFERIOR (ESTILO FLOTANTE Y ADAPTATIVO) --- */
+.fixed-nav-bar {
     position: fixed;
-    bottom: 15px;
+    /* env(safe-area-inset-bottom) respeta la barra gestual de los iPhone */
+    bottom: max(15px, env(safe-area-inset-bottom));
     left: 15px;
     right: 15px;
     height: var(--nav-height);
-    background: rgba(17, 24, 39, 0.9);
+    background: rgba(17, 24, 39, 0.92);
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     display: flex;
     border-radius: 22px;
     border: 1px solid var(--glass-border);
@@ -112,34 +125,38 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.6);
 }
 
-.nav-item {
+.fixed-nav-btn {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background: transparent;
+    border: none;
     color: var(--text-secondary);
     font-size: 0.65rem;
     font-weight: 700;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
 
-.nav-item i {
+.fixed-nav-btn i {
     font-size: 1.4rem;
     margin-bottom: 4px;
+    transition: transform 0.2s;
 }
 
-.nav-item.active {
+.fixed-nav-btn.active {
     color: var(--blue-tg);
-    transform: translateY(-5px);
 }
 
-.nav-item.active i {
+.fixed-nav-btn.active i {
+    transform: translateY(-5px);
     text-shadow: 0 0 15px var(--blue-glow);
 }
 
-/* --- BOTONES --- */
-.btn-primary {
+/* --- BOTONES GENÉRICOS --- */
+.btn-action, .btn-primary {
     width: 100%;
     padding: 16px;
     border-radius: 16px;
@@ -150,9 +167,14 @@ body {
     font-size: 1rem;
     box-shadow: 0 4px 15px var(--blue-glow);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
 }
 
-.btn-primary:active {
+.btn-action:active, .btn-primary:active {
     transform: scale(0.96);
     filter: brightness(0.9);
 }
@@ -167,6 +189,7 @@ input {
     color: white;
     font-weight: 600;
     outline: none;
+    box-sizing: border-box; /* Asegura que el padding no rompa el ancho del input */
 }
 
 input:focus {
