@@ -3,478 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ProfitGPTGT</title>
-
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Panel de Interconexión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="src/styles/theme.css">
-
     <style>
-        /* --- 1. BASE Y ADAPTACIÓN MÓVIL (PANTALLA COMPLETA NATIVA) --- */
+        /* Variables de color de la interfaz */
         :root {
-            --blue-tg: #0088cc;
+            --blue-tg: #3b82f6;
             --success: #10b981;
-            --text-secondary: #94a3b8;
+            --text-secondary: #848da0;
+            --bg-main: #05070a;
+            --bg-card: rgba(13, 17, 28, 0.8);
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            margin: 0; 
+        /* Estilos Globales */
+        body {
+            margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100dvh; /* Alto dinámico exacto para móviles */
-            overflow: hidden; /* Evita que la app web entera rebote */
-            background-color: #05070a;
-            color: #ffffff;
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            line-height: 1.5;
-            user-select: none;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-main);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-bottom: 80px; /* Espacio para el menú inferior */
         }
 
-        /* Contenedor principal con scroll interno fluido */
-        .app-shell {
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            /* Padding inferior: Altura del nav (65px) + Zona segura iOS + Espacio extra */
-            padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px) + 20px);
+        /* Lógica de Pestañas */
+        .view { 
+            display: none; 
+            padding: 20px; 
+            animation: fadeIn 0.3s ease;
+        }
+        .view.active { 
+            display: block; 
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* --- 2. SISTEMA DE VISTAS --- */
-        .view {
-            display: none !important;
-            width: 100%;
-            padding: 20px;
-            opacity: 0;
+        /* Utilidades de Tarjetas */
+        .neon-glow-card { 
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); 
+            border: 1px solid rgba(59, 130, 246, 0.2); 
+            background: rgba(13, 17, 28, 0.6); 
+        }
+        .main-card { 
+            background: var(--bg-card); 
+        }
+        
+        /* Inputs */
+        input { 
+            width: 100%; 
+            box-sizing: border-box; 
+            background: rgba(0,0,0,0.4); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: #fff; 
+            text-align: center; 
+            outline: none; 
+            transition: border 0.3s;
+        }
+        input:focus { 
+            border-color: var(--blue-tg); 
         }
 
-        .view.active {
-            display: block !important;
-            animation: slideUp 0.3s ease-out forwards;
+        /* Navegación Inferior (Estilo App) */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: #0a0e17; 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+            z-index: 100; 
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
         }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        .nav-item { 
+            color: var(--text-secondary); 
+            text-align: center; 
+            font-size: 0.75rem; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            width: 33%;
         }
-
-        /* --- 3. DISEÑO CYBERPUNK Y COMPONENTES --- */
-        .neon-glow-card {
-            position: relative;
-            background: linear-gradient(135deg, rgba(0, 136, 204, 0.1) 0%, rgba(5, 7, 10, 0.8) 100%);
-            border: 1px solid rgba(0, 136, 204, 0.3) !important;
-            box-shadow: 0 0 15px rgba(0, 136, 204, 0.15);
+        .nav-item i { 
+            display: block; 
+            font-size: 1.2rem; 
+            margin-bottom: 4px; 
         }
-
-        /* Núcleo de Energía Giratorio */
-        .quantum-loader {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: 3px double transparent;
-            background-image: linear-gradient(rgba(5, 7, 10, 0.9), rgba(5, 7, 10, 0.9)), linear-gradient(135deg, #0088cc, #10b981);
-            background-origin: border-box;
-            background-clip: content-box, border-box;
-            animation: spinCore 4s linear infinite;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(0, 136, 204, 0.4);
-            flex-shrink: 0;
-        }
-
-        @keyframes spinCore {
-            0% { transform: rotate(0deg); box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
-            50% { transform: rotate(180deg); box-shadow: 0 0 25px rgba(16, 185, 129, 0.5); }
-            100% { transform: rotate(360deg); box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
-        }
-
-        .pulse-text { animation: textPulse 2s infinite ease-in-out; }
-        @keyframes textPulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; color: #10b981; }
-        }
-
-        .telemetry-bar {
-            width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin-top: 6px;
-        }
-
-        .telemetry-progress {
-            height: 100%; width: 73%; background: linear-gradient(90deg, var(--blue-tg), #10b981);
-            animation: loadBar 3s infinite alternate;
-        }
-
-        @keyframes loadBar {
-            0% { width: 40%; }
-            100% { width: 85%; }
-        }
-
-        /* Inputs Modernizados */
-        input[type="number"] {
-            font-size: 2.2rem; font-weight: 800; text-align: center; background: rgba(0,0,0,0.4); 
-            border: 1px solid rgba(0, 136, 204, 0.2); color: #fff; width: 100%; outline: none; 
-            border-radius: 16px; padding: 10px 0; margin-bottom: 20px; font-family: monospace; letter-spacing: 1px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;
-        }
-        input[type="number"]:focus {
-            border-color: var(--blue-tg); box-shadow: 0 0 15px rgba(0, 136, 204, 0.3);
-        }
-
-        /* --- 4. BARRA DE NAVEGACIÓN INFERIOR OPTIMIZADA --- */
-        .fixed-nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: calc(65px + env(safe-area-inset-bottom, 0px)); /* Se adapta a la barra de iOS */
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            background: rgba(7, 10, 15, 0.92);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            z-index: 9999;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.6);
-        }
-
-        .fixed-nav-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            gap: 4px;
-            padding: 4px 0;
-            transition: all 0.2s ease;
-        }
-
-        .fixed-nav-btn i {
-            font-size: 1.25rem;
-            transition: transform 0.2s ease;
-        }
-
-        .fixed-nav-btn span {
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .fixed-nav-btn.active {
-            color: var(--blue-tg);
-            text-shadow: 0 0 8px rgba(0, 136, 204, 0.3);
-        }
-
-        .fixed-nav-btn.active i {
-            transform: translateY(-2px);
-            color: var(--blue-tg);
+        .nav-item.active { 
+            color: var(--blue-tg); 
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.5); 
         }
     </style>
 </head>
 <body>
 
-<div class="app-shell">
-
-    <div class="header-profile" style="display: flex; align-items: center; justify-content: space-between; margin: 20px 20px 15px 20px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05);">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="position: relative; width: 38px; height: 38px;">
-                <img id="user-pic" src="https://ui-avatars.com/api/?name=User&background=0088cc&color=fff" style="width: 100%; height: 100%; border-radius: 10px; border: 1.5px solid rgba(0,136,204,0.3); object-fit: cover; display: block;">
-                <span style="position: absolute; bottom: -2px; right: -2px; width: 10px; height: 10px; background: #10b981; border: 2px solid #05070a; border-radius: 50%;"></span>
-            </div>
-            <div style="display: flex; flex-direction: column; justify-content: center;">
-                <h2 id="user-full-name" style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #fff; line-height: 1.1;">Cargando...</h2>
-                <span id="user-id" style="font-size: 0.65rem; color: var(--blue-tg); font-weight: 700; margin-top: 2px; font-family: monospace;">ID: 0000000000</span>
-            </div>
+    <section id="core" class="view active">
+        <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 15px; color: #fff;">
+            <i class="fa-solid fa-microchip" style="color: var(--blue-tg); margin-right: 6px;"></i>Core Dashboard
+        </h2>
+        
+        <div class="main-card neon-glow-card" style="text-align: center; padding: 25px; border-radius: 20px; border: 1px dashed var(--blue-tg);">
+            <i class="fa-solid fa-code" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 10px;"></i>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; font-weight: bold; margin: 0; line-height: 1.4;">
+                ELIMINA ESTA TARJETA Y PEGA AQUÍ <br> TU CÓDIGO DE LA PESTAÑA CORE
+            </p>
         </div>
-    </div>
-
-    <section id="dashboard" class="view active">
-
-        <div class="main-card neon-glow-card" style="background: linear-gradient(180deg, rgba(0,136,204,0.18) 0%, rgba(13,17,28,0.9) 100%); border-radius: 24px; padding: 25px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div class="balance-label" style="font-size: 0.65rem; opacity: 0.8; font-weight: 700;">BÓVEDA DE RECURSOS DIGITALES</div>
-                <div style="display: flex; align-items: center; gap: 5px; background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                    <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
-                    <span style="font-size: 0.6rem; font-weight: 800; color: #10b981; letter-spacing: 0.5px;">NODO ONLINE</span>
-                </div>
-            </div>
-
-            <div class="balance-val" style="display: flex; align-items: baseline; gap: 5px; margin: 15px 0; font-size: 2.8rem; font-weight: 800;">
-                <span id="main-balance-hash" style="text-shadow: 0 0 10px rgba(255,255,255,0.3);">0</span>
-                <span style="font-size: 0.8rem; color: var(--blue-tg); font-weight: 700; letter-spacing: 1px;">HASH</span>
-                <span style="font-size: 0.9rem; color: #94a3b8; font-weight: 400; margin-left: auto;">≈ <span id="main-balance-usdt" style="color: #fff; font-weight: 700;">0.00</span> <small style="color: #10b981; font-weight: 700; font-size: 0.65rem;">USDT</small></span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 20px;">
-                <button class="btn-action" onclick="switchTab('planes')" style="background: var(--blue-tg); color: white; border: none; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
-                    <i class="fa-solid fa-bolt" style="margin-bottom: 4px; font-size: 1.1rem;"></i> Invertir
-                </button>
-
-                <div style="position: relative;">
-                    <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; font-size: 0.55rem; font-weight: 900; padding: 2px 6px; border-radius: 6px; z-index: 10; box-shadow: 0 0 8px #10b981;">+5% BONUS</span>
-                    <button class="btn-action" onclick="openReinvestModal()" style="background: rgba(255,255,255,0.05); color: white; width: 100%; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; border: 1px solid rgba(0,136,204,0.3); cursor: pointer;">
-                        <i class="fa-solid fa-rotate" style="color: var(--blue-tg); margin-bottom: 4px; font-size: 1.1rem;"></i> Reinvertir
-                    </button>
-                </div>
-
-                <button class="btn-action" onclick="switchTab('history')" style="background: rgba(255,255,255,0.05); color: white; border: none; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
-                    <i class="fa-solid fa-chart-line" style="margin-bottom: 4px; font-size: 1.1rem;"></i> Historial
-                </button>
-            </div>
-        </div>
-
-        <div class="main-card" style="background: rgba(13, 17, 28, 0.7); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 24px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                <div style="flex: 1;">
-                    <div class="balance-label" style="font-size: 0.65rem; font-weight: bold;">PROCESAMIENTO EN CURSO</div>
-                    <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 6px;">
-                        <div style="font-size: 1.8rem; font-weight: 800; font-family: monospace; color: #fff;"><span id="mining-hash">0</span></div>
-                        <div style="font-size: 0.7rem; color: #10b981; font-weight: 700;">GH/s</div>
-                    </div>
-                    <div id="mining-speed" style="font-size: 0.7rem; color: var(--blue-tg); font-weight: bold; margin-top: 4px;">
-                        <i class="fa-solid fa-microchip"></i> 0.0 GH/s núcleos asignados
-                    </div>
-                </div>
-
-                <div class="quantum-loader">
-                    <i class="fa-solid fa-atom" style="font-size: 1.8rem; color: #0088cc;"></i>
-                </div>
-            </div>
-
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.08); display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: #848da0; font-weight: bold;">
-                        <span>EFICIENCIA NODO</span>
-                        <span style="color: #10b981;">98.4%</span>
-                    </div>
-                    <div class="telemetry-bar"><div class="telemetry-progress"></div></div>
-                </div>
-                <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: #848da0; font-weight: bold;">
-                        <span>TEMP. PROCESADOR</span>
-                        <span style="color: #f59e0b;">41°C</span>
-                    </div>
-                    <div class="telemetry-bar"><div class="telemetry-progress" style="width: 55%; background: #f59e0b; animation-duration: 2s;"></div></div>
-                </div>
-            </div>
-
-            <button onclick="claimMining()" class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; margin-top: 20px; padding: 14px; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,136,204,0.3); font-weight: 800; cursor: pointer;">
-                <i class="fa-solid fa-hand-holding-dollar"></i> RECLAMAR RECOMPENSAS IA
-            </button>
-        </div>
-
     </section>
 
     <section id="planes" class="view">
-        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-server" style="color: var(--blue-tg); margin-right: 6px;"></i>Contratar Potencia Dedicada</h2>
+        <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-server" style="color: var(--blue-tg); margin-right: 6px;"></i>Contratar Potencia</h2>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-            <div class="stat-card" style="border: 1px solid rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.03); position: relative; padding: 15px 10px; border-radius: 16px;">
-                <span style="font-size: 0.55rem; color: #3b82f6; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">NIVEL 01</span>
-                <span style="font-size: 0.85rem; font-weight: 800; color: #fff; display: block;">MICRO-NODO</span>
-                <div style="color: #3b82f6; font-size: 1.2rem; font-weight: 800; margin-top: 5px;">4.5% <small style="font-size: 0.6rem; color: #848da0;">DIARIO</small></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;">
+            <div class="stat-card" style="border: 1px solid rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.03); position: relative; padding: 12px 10px; border-radius: 14px;">
+                <span style="font-size: 0.5rem; color: #3b82f6; font-weight: 800; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">NIVEL 01</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: #fff; display: block;">MICRO-NODO</span>
+                <div style="color: #3b82f6; font-size: 1.05rem; font-weight: 800; margin-top: 4px;">4.5% <small style="font-size: 0.55rem; color: #848da0;">DIARIO</small></div>
             </div>
-            <div class="stat-card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.03); padding: 15px 10px; border-radius: 16px;">
-                <span style="font-size: 0.55rem; color: #10b981; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">NIVEL 02</span>
-                <span style="font-size: 0.85rem; font-weight: 800; color: #fff; display: block;">SERVER-NODE</span>
-                <div style="color: #10b981; font-size: 1.2rem; font-weight: 800; margin-top: 5px;">5.5% <small style="font-size: 0.6rem; color: #848da0;">DIARIO</small></div>
+            <div class="stat-card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.03); padding: 12px 10px; border-radius: 14px;">
+                <span style="font-size: 0.5rem; color: #10b981; font-weight: 800; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">NIVEL 02</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: #fff; display: block;">SERVER-NODE</span>
+                <div style="color: #10b981; font-size: 1.05rem; font-weight: 800; margin-top: 4px;">5.5% <small style="font-size: 0.55rem; color: #848da0;">DIARIO</small></div>
             </div>
-            <div class="stat-card" style="border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.03); padding: 15px 10px; border-radius: 16px;">
-                <span style="font-size: 0.55rem; color: #a855f7; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">NIVEL 03</span>
-                <span style="font-size: 0.85rem; font-weight: 800; color: #fff; display: block;">MASTERNODE</span>
-                <div style="color: #a855f7; font-size: 1.2rem; font-weight: 800; margin-top: 5px;">6.5% <small style="font-size: 0.6rem; color: #848da0;">DIARIO</small></div>
+            <div class="stat-card" style="border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.03); padding: 12px 10px; border-radius: 14px;">
+                <span style="font-size: 0.5rem; color: #a855f7; font-weight: 800; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">NIVEL 03</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: #fff; display: block;">MASTERNODE</span>
+                <div style="color: #a855f7; font-size: 1.05rem; font-weight: 800; margin-top: 4px;">6.5% <small style="font-size: 0.55rem; color: #848da0;">DIARIO</small></div>
             </div>
-            <div class="stat-card" style="border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.03); padding: 15px 10px; position: relative; overflow: hidden; border-radius: 16px;">
-                <div style="position: absolute; top: 0; right: 0; background: #f59e0b; color: #000; font-size: 0.5rem; font-weight: 900; padding: 2px 6px; border-bottom-left-radius: 8px;">TOP</div>
-                <span style="font-size: 0.55rem; color: #f59e0b; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">NIVEL 04</span>
-                <span style="font-size: 0.85rem; font-weight: 800; color: #fff; display: block;">GIGA-CLUSTER</span>
-                <div style="color: #f59e0b; font-size: 1.2rem; font-weight: 800; margin-top: 5px;">7.5% <small style="font-size: 0.6rem; color: #848da0;">DIARIO</small></div>
+            <div class="stat-card" style="border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.03); padding: 12px 10px; position: relative; overflow: hidden; border-radius: 14px;">
+                <div style="position: absolute; top: 0; right: 0; background: #f59e0b; color: #000; font-size: 0.45rem; font-weight: 900; padding: 2px 5px; border-bottom-left-radius: 6px;">TOP</div>
+                <span style="font-size: 0.5rem; color: #f59e0b; font-weight: 800; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">NIVEL 04</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: #fff; display: block;">GIGA-CLUSTER</span>
+                <div style="color: #f59e0b; font-size: 1.05rem; font-weight: 800; margin-top: 4px;">7.5% <small style="font-size: 0.55rem; color: #848da0;">DIARIO</small></div>
             </div>
         </div>
 
-        <div class="main-card neon-glow-card" style="text-align: center; padding: 25px; border-radius: 24px;">
-            <div class="balance-label" style="margin-bottom: 12px; font-size: 0.7rem; font-weight: bold; letter-spacing: 1.5px;">INYECTAR LIQUIDEZ REQUERIDA (USDT)</div>
+        <div class="main-card neon-glow-card" style="text-align: center; padding: 18px; border-radius: 20px;">
+            <div class="balance-label" style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; letter-spacing: 1px; color: var(--text-secondary);">INYECTAR LIQUIDEZ (USDT)</div>
 
-            <input type="number" id="invest-amount" placeholder="0.00" oninput="calculateROI()">
+            <input type="number" id="invest-amount" placeholder="0.00" oninput="calculateROI()" style="font-size: 1.6rem; padding: 6px 0; margin-bottom: 15px; border-radius: 12px;">
 
-            <div style="background: rgba(5, 7, 10, 0.7); border-radius: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.06); text-align: left;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.75rem;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> Rendimiento:</span>
-                    <span id="calc-power" style="font-weight: 700; color: var(--blue-tg); font-family: monospace;">0.0 GH/s</span>
+            <div style="background: rgba(5, 7, 10, 0.7); border-radius: 14px; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.06); text-align: left;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> Rendimiento:</span>
+                    <span id="calc-power" style="font-weight: 700; color: var(--blue-tg); font-size: 0.8rem; font-family: monospace;">0.0 GH/s</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.75rem;"><i class="fa-solid fa-cube" style="color: #10b981; width: 15px;"></i> Minado Diario Estimado:</span>
-                    <span id="calc-hash" style="font-weight: 700; color: var(--success); font-family: monospace;">0 HASH</span>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-cube" style="color: #10b981; width: 15px;"></i> Minado Diario:</span>
+                    <span id="calc-hash" style="font-weight: 700; color: var(--success); font-size: 0.8rem; font-family: monospace;">0 HASH</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
-                    <span style="color: var(--text-secondary); font-size: 0.75rem;"><i class="fa-solid fa-shield-halved" style="color: #f59e0b; width: 15px;"></i> Rango del Sistema:</span>
-                    <span id="calc-tier" style="font-weight: 800; color: #f59e0b; letter-spacing: 1px;">---</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-shield-halved" style="color: #f59e0b; width: 15px;"></i> Rango:</span>
+                    <span id="calc-tier" style="font-weight: 800; color: #f59e0b; font-size: 0.75rem; letter-spacing: 0.5px;">---</span>
                 </div>
             </div>
 
-            <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; margin-top: 20px; height: 55px; border-radius: 16px; font-weight: 800; font-size: 0.95rem; letter-spacing: 0.5px; cursor: pointer;" onclick="openPayModal()">
+            <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; margin-top: 15px; height: 45px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; cursor: pointer; transition: opacity 0.2s;" onclick="openPayModal()">
                 <i class="fa-solid fa-satellite-dish"></i> PROPAGAR INTERCONEXIÓN
             </button>
         </div>
     </section>
 
     <section id="red" class="view">
-        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: var(--blue-tg); margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
+        <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: var(--blue-tg); margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
 
-        <div class="main-card neon-glow-card" style="text-align: center; margin-bottom: 20px; padding: 20px; border-radius: 20px;">
-            <div class="balance-val" style="justify-content: center; font-size: 2.2rem; font-weight: bold; font-family: monospace; text-shadow: 0 0 10px rgba(0,136,204,0.4);" id="ref-count">0</div>
-            <div class="balance-label" style="font-size: 0.65rem; font-weight: bold; margin-top: 4px;">Nodos Enlazados a tu Red</div>
+        <div class="main-card neon-glow-card" style="text-align: center; margin-bottom: 15px; padding: 15px; border-radius: 16px;">
+            <div class="balance-val" style="justify-content: center; font-size: 1.8rem; font-weight: bold; font-family: monospace; text-shadow: 0 0 10px rgba(0,136,204,0.4);" id="ref-count">0</div>
+            <div class="balance-label" style="font-size: 0.6rem; font-weight: bold; margin-top: 2px; color: var(--text-secondary);">Nodos Enlazados a tu Red</div>
         </div>
 
-        <div class="main-card" style="margin-bottom: 20px; padding: 15px; background: rgba(13,17,28,0.6); border-radius: 20px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="background: rgba(5,7,10,0.6); padding: 12px; border-radius: 14px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                    <div style="color: #10b981; font-size: 0.65rem; font-weight: 800;">NIVEL 1 (8%)</div>
-                    <div id="ref-L1" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
+        <div class="main-card" style="margin-bottom: 15px; padding: 12px; background: rgba(13,17,28,0.6); border-radius: 16px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="background: rgba(5,7,10,0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <div style="color: #10b981; font-size: 0.55rem; font-weight: 800;">NIVEL 1 (8%)</div>
+                    <div id="ref-L1" style="font-size: 1.1rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
                 </div>
-                <div style="background: rgba(5,7,10,0.6); padding: 12px; border-radius: 14px; border: 1px solid rgba(96, 165, 250, 0.2);">
-                    <div style="color: #60a5fa; font-size: 0.65rem; font-weight: 800;">NIVEL 2 (4%)</div>
-                    <div id="ref-L2" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
+                <div style="background: rgba(5,7,10,0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.2);">
+                    <div style="color: #60a5fa; font-size: 0.55rem; font-weight: 800;">NIVEL 2 (4%)</div>
+                    <div id="ref-L2" style="font-size: 1.1rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
                 </div>
-                <div style="background: rgba(5,7,10,0.6); padding: 12px; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.15);">
-                    <div style="color: #94a3b8; font-size: 0.65rem; font-weight: 800;">NIVEL 3 (1.5%)</div>
-                    <div id="ref-L3" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
+                <div style="background: rgba(5,7,10,0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.15);">
+                    <div style="color: #94a3b8; font-size: 0.55rem; font-weight: 800;">NIVEL 3 (1.5%)</div>
+                    <div id="ref-L3" style="font-size: 1.1rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
                 </div>
-                <div style="background: rgba(5,7,10,0.6); padding: 12px; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.15);">
-                    <div style="color: #94a3b8; font-size: 0.65rem; font-weight: 800;">NIVEL 4 (1%)</div>
-                    <div id="ref-L4" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
+                <div style="background: rgba(5,7,10,0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.15);">
+                    <div style="color: #94a3b8; font-size: 0.55rem; font-weight: 800;">NIVEL 4 (1%)</div>
+                    <div id="ref-L4" style="font-size: 1.1rem; font-weight: 800; font-family: monospace; margin-top: 2px;">0</div>
                 </div>
-                <div style="background: rgba(5,7,10,0.6); padding: 12px; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.15); grid-column: span 2;">
-                    <div style="color: #a855f7; font-size: 0.65rem; font-weight: 800; text-align: center;">NIVEL 5 (0.5%)</div>
-                    <div id="ref-L5" style="font-size: 1.3rem; font-weight: 800; text-align: center; font-family: monospace; margin-top: 2px;">0</div>
+                <div style="background: rgba(5,7,10,0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.15); grid-column: span 2;">
+                    <div style="color: #a855f7; font-size: 0.55rem; font-weight: 800; text-align: center;">NIVEL 5 (0.5%)</div>
+                    <div id="ref-L5" style="font-size: 1.1rem; font-weight: 800; text-align: center; font-family: monospace; margin-top: 2px;">0</div>
                 </div>
             </div>
         </div>
 
-        <div class="main-card" style="background: rgba(13,17,28,0.8); border-radius: 20px; padding: 20px;">
-            <div class="balance-label" style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold;">ENLACE DE RADAR PERSONAL</div>
-            <input type="text" id="ref-link" readonly value="Cargando enlace..." style="margin-bottom: 15px; font-size: 0.85rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #848da0; padding: 14px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: monospace;">
-            <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="copyLink()"><i class="fa-solid fa-copy"></i> Encriptar y Copiar Enlace</button>
+        <div class="main-card" style="background: rgba(13,17,28,0.8); border-radius: 16px; padding: 15px;">
+            <div class="balance-label" style="margin-bottom: 8px; font-size: 0.6rem; font-weight: bold; color: var(--text-secondary);">ENLACE DE RADAR PERSONAL</div>
+            <input type="text" id="ref-link" readonly value="https://app.tu-dominio.com/ref?id=NODE_8849X" style="margin-bottom: 12px; font-size: 0.75rem; padding: 10px; border-radius: 10px; font-family: monospace;">
+            <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; height: 40px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s;" onclick="copyLink()">
+                <i class="fa-solid fa-copy"></i> Encriptar y Copiar Enlace
+            </button>
         </div>
     </section>
 
-    <section id="misiones" class="view">
-        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-gift" style="color: #10b981; margin-right: 6px;"></i>Incentivos de Expansión</h2>
-
-        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px;">
-            <div style="width: 45px; height: 45px; background: rgba(29, 161, 242, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fa-brands fa-twitter" style="font-size: 1.3rem; color: #1da1f2;"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Sincronizar Twitter / X</div>
-                <div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+0.50 USDT extraídos</div>
-            </div>
-            <button class="btn-action" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">VINCULAR</button>
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('core', this)">
+            <i class="fa-solid fa-microchip"></i>
+            Core
         </div>
-
-        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-top: 12px;">
-            <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fa-brands fa-telegram" style="font-size: 1.3rem; color: #0088cc;"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Canal Cuántico</div>
-                <div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+1.00 USDT de Potencia</div>
-            </div>
-            <button class="btn-action" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">UNIRSE</button>
+        <div class="nav-item" onclick="switchTab('planes', this)">
+            <i class="fa-solid fa-server"></i>
+            Nodos
         </div>
-    </section>
-
-    <section id="history" class="view">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-            <i class="fa-solid fa-arrow-left" onclick="switchTab('dashboard')" style="cursor: pointer; color: var(--blue-tg); font-size: 1.2rem;"></i>
-            <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: #fff;">Registros de Ledger</h2>
+        <div class="nav-item" onclick="switchTab('red', this)">
+            <i class="fa-solid fa-network-wired"></i>
+            Red
         </div>
-        <div id="history-list">
-            </div>
-    </section>
-</div>
-
-<nav class="fixed-nav-bar">
-    <button class="fixed-nav-btn active" onclick="switchTab('dashboard', this)">
-        <i class="fa-solid fa-terminal"></i>
-        <span>Core</span>
-    </button>
-    <button class="fixed-nav-btn" onclick="switchTab('planes', this)">
-        <i class="fa-solid fa-circle-nodes"></i>
-        <span>Nodos</span>
-    </button>
-    <button class="fixed-nav-btn" onclick="switchTab('red', this)">
-        <i class="fa-solid fa-diagram-project"></i>
-        <span>Red</span>
-    </button>
-    <button class="fixed-nav-btn" onclick="switchTab('misiones', this)">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>Misiones</span>
-    </button>
-</nav>
-
-<div id="payModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,5,8,0.95); z-index:10000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(8px);">
-    <div class="main-card neon-glow-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border-radius: 20px;">
-        <h3 style="margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem;">Canalizar Depósito</h3>
-        <img id="qr-image" src="" style="width: 150px; height: 150px; background: white; padding: 8px; border-radius: 14px; margin: 0 auto 15px auto; display: block; box-shadow: 0 0 15px rgba(255,255,255,0.1);">
-        <div id="pay-amount-display" style="font-size: 1.7rem; font-weight: 800; color: #10b981; font-family: monospace; margin-bottom: 10px;">0.00 USDT</div>
-        <div id="wallet-address-display" style="font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 14px; border-radius: 12px; border: 1px dashed var(--blue-tg); word-break: break-all; margin-bottom: 18px; font-family: monospace; color: #94a3b8;">Generando Dirección Alfa...</div>
-        <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección Hash</button>
-        <button onclick="document.getElementById('payModal').style.display='none'" style="background:none; border:none; color:var(--text-secondary); margin-top:18px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">Abortar Transmisión</button>
     </div>
-</div>
 
-<script>
-    // Sistema de navegación blindado
-    window.switchTab = function(tabId, button) {
-        // 1. Ocultar todas las vistas
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-
-        // 2. Mostrar la vista seleccionada
-        const targetView = document.getElementById(tabId);
-        if(targetView) targetView.classList.add('active');
-
-        // 3. Quitar el estado activo de todos los botones de la barra inferior
-        document.querySelectorAll('.fixed-nav-btn').forEach(b => b.classList.remove('active'));
-
-        // 4. Activar el botón correcto
-        if(button) {
-            button.classList.add('active');
-        } else {
-            // Si el cambio de pestaña se hizo desde otro lado (ej. un botón en el dashboard)
-            const navBtn = document.querySelector(`.fixed-nav-btn[onclick*="${tabId}"]`);
-            if(navBtn) navBtn.classList.add('active');
+    <script>
+        // Función para cambiar de pestaña
+        function switchTab(tabId, element) {
+            // Ocultar todas las vistas
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            // Quitar clase activa a todos los botones del menú
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Mostrar la vista seleccionada y marcar el botón
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            
+            // Hacer scroll hacia arriba al cambiar de pestaña
+            window.scrollTo(0,0);
         }
-    };
 
-    // Funciones básicas para el Modal
-    window.openPayModal = function() { 
-        document.getElementById('payModal').style.display = 'flex'; 
-    };
-    window.closePayModal = function() { 
-        document.getElementById('payModal').style.display = 'none'; 
-    };
-</script>
+        // Función para calcular proyección de la inversión
+        function calculateROI() {
+            const amountInput = document.getElementById('invest-amount').value;
+            const amount = parseFloat(amountInput) || 0;
+            
+            let power = 0, hash = 0, tier = "---";
+            
+            if(amount > 0) {
+                // Fórmulas ficticias para la demostración visual
+                power = (amount * 0.45).toFixed(1); 
+                hash = Math.floor(amount * 15.2);
+                
+                if(amount < 100) tier = "MICRO-NODO";
+                else if(amount < 500) tier = "SERVER-NODE";
+                else if(amount < 2000) tier = "MASTERNODE";
+                else tier = "GIGA-CLUSTER";
+            }
+            
+            document.getElementById('calc-power').innerText = power + " GH/s";
+            document.getElementById('calc-hash').innerText = hash + " HASH";
+            document.getElementById('calc-tier').innerText = tier;
+        }
 
-<script type="module">
-    // Aquí importas solo las funciones de lógica dura
-    import { calculateROI, claimMining, copyLink, copyAddress } from './src/main.js';
+        // Función para copiar el enlace de referido
+        function copyLink() {
+            const linkInput = document.getElementById('ref-link');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // Para dispositivos móviles
+            
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                alert("✅ Enlace de interconexión copiado exitosamente al portapapeles.");
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
 
-    // Se las asignas a window para que los botones en el HTML las encuentren
-    window.calculateROI = calculateROI;
-    window.claimMining = claimMining;
-    window.copyLink = copyLink;
-    window.copyAddress = copyAddress;
-</script>
-
+        // Simulación de botón de pago
+        function openPayModal() {
+            const amount = parseFloat(document.getElementById('invest-amount').value) || 0;
+            if(amount <= 0) {
+                alert("⚠️ Ingresa una cantidad válida de liquidez para continuar.");
+                return;
+            }
+            alert("Redirigiendo a contrato inteligente para procesar " + amount + " USDT...");
+        }
+    </script>
 </body>
 </html>
