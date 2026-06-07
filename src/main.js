@@ -201,7 +201,23 @@ window.onload = () => {
             const tgData = window.Telegram?.WebApp?.initDataUnsafe;
             const urlParams = new URLSearchParams(window.location.search);
 
-            state.userId = tgData?.user?.id || urlParams.get('user_id') || '88888888';
+            // --- ACTUALIZACIÓN: Datos de Perfil ---
+            if (tgData?.user) {
+                // 1. ID de Usuario
+                state.userId = tgData.user.id;
+                document.getElementById('user-id').innerText = `ID: ${state.userId}`;
+
+                // 2. Nombre de Usuario
+                const fullName = `${tgData.user.first_name} ${tgData.user.last_name || ''}`;
+                document.getElementById('user-full-name').innerText = fullName;
+
+                // 3. Foto de Perfil (Si Telegram proporciona una)
+                if (tgData.user.photo_url) {
+                    document.getElementById('user-pic').src = tgData.user.photo_url;
+                }
+            } else {
+                state.userId = urlParams.get('user_id') || '88888888';
+            }
 
             console.log(`[OK] Enlace establecido. Operador ID: ${state.userId}`);
 
@@ -215,7 +231,6 @@ window.onload = () => {
         }
     }, 150);
 };
-
 // ==========================================
 // 5. EXPORTAR AL ENTORNO GLOBAL
 // ==========================================
