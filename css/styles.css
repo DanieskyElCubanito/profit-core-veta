@@ -2,7 +2,7 @@
 :root {
     --blue-tg: #0088cc;
     --blue-glow: rgba(0, 136, 204, 0.2);
-    --dark-deep: #05070a; /* Fondo ultra oscuro */
+    --dark-deep: #0b0f19; /* 🌟 Fondo azul nocturno profundo */
     --card-bg: #111827;   /* Gris azulado profundo para tarjetas */
     --glass-border: rgba(255, 255, 255, 0.08);
     --text-primary: #ffffff;
@@ -25,6 +25,13 @@ html, body {
     height: 100dvh; /* Magia para móviles: Alto dinámico exacto */
     overflow: hidden; /* Evita que la app web entera rebote */
     background-color: var(--dark-deep);
+    
+    /* 🌟 Efecto premium: Dos esferas de luz azul difuminadas en el fondo */
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(0, 136, 204, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 100% 20%, rgba(0, 136, 204, 0.1) 0%, transparent 40%);
+    background-attachment: fixed;
+    
     color: var(--text-primary);
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     line-height: 1.5;
@@ -179,7 +186,45 @@ html, body {
     filter: brightness(0.9);
 }
 
-/* --- INPUTS --- */
+/* --- INPUTS MODERNOS (USDT Y GENÉRICOS) --- */
+.modern-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 136, 204, 0.3);
+    border-radius: 16px;
+    padding: 5px 15px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.modern-input-wrapper:focus-within {
+    border-color: var(--blue-tg);
+    box-shadow: 0 0 10px rgba(0, 136, 204, 0.2);
+}
+
+.input-icon {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+}
+
+#invest-amount {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 12px 0;
+    outline: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+#invest-amount::placeholder {
+    color: #64748b;
+    font-weight: 500;
+}
+
 input {
     width: 100%;
     background: #0d111c;
