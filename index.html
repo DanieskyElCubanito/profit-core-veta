@@ -303,8 +303,12 @@
             <div class="balance-label" style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; letter-spacing: 1px;">INYECTAR LIQUIDEZ REQUERIDA (USDT)</div>
 
             <!-- Input con validación nativa mínima de 0.1 -->
-            <input type="number" id="invest-amount" placeholder="Min. 0.10" min="0.1" step="0.1" oninput="calculateROI()" style="font-size: 1.8rem; padding: 6px 0; margin-bottom: 15px; border-radius: 12px;">
-
+           <div class="modern-input-wrapper">
+    <div class="input-icon">
+        <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" style="width: 24px; height: 24px;">
+    </div>
+    <input type="number" id="invest-amount" placeholder="Min 0.1 USDT" min="0.1" step="0.1" oninput="calculateROI()">
+</div>
             <div style="background: rgba(5, 7, 10, 0.7); border-radius: 14px; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.06); text-align: left;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
                     <span style="color: var(--text-secondary); font-size: 0.7 streamlined-font;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 12px;"></i> Rendimiento:</span>
