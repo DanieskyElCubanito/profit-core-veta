@@ -29,6 +29,44 @@ body {
     user-select: none;
 }
 
+.modern-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 136, 204, 0.3);
+    border-radius: 16px;
+    padding: 5px 15px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.modern-input-wrapper:focus-within {
+    border-color: var(--blue-tg);
+    box-shadow: 0 0 10px rgba(0, 136, 204, 0.2);
+}
+
+.input-icon {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+}
+
+#invest-amount {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 12px 0;
+    outline: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+#invest-amount::placeholder {
+    color: #64748b;
+    font-weight: 500;
+}
+
 /* --- SISTEMA DE VISTAS --- */
 .view {
     display: none !important; 
@@ -171,4 +209,4 @@ input {
 
 input:focus {
     border-color: var(--blue-tg);
-                                 }
+}
