@@ -2,7 +2,7 @@
 :root {
     --blue-tg: #0088cc;
     --blue-glow: rgba(0, 136, 204, 0.2);
-    --dark-deep: #05070a; 
+    --dark-deep: #0b0f19; /* 🌟 Actualizado al azul nocturno profundo */
     --card-bg: #111827;   
     --glass-border: rgba(255, 255, 255, 0.08);
     --text-primary: #ffffff;
@@ -23,6 +23,11 @@ body {
     padding: 0;
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     background-color: var(--dark-deep);
+    /* 🌟 Efecto premium: Dos esferas de luz azul difuminadas en el fondo */
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(0, 136, 204, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 100% 20%, rgba(0, 136, 204, 0.1) 0%, transparent 40%);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.5;
     overflow-x: hidden;
