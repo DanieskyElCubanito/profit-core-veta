@@ -45,7 +45,7 @@
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 20px;">
-                <button class="btn-action" onclick="switchTab('planes')" style="background: var(--blue-tg); color: white; border: none; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
+                <button class="btn-action" onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])" style="background: var(--blue-tg); color: white; border: none; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
                     <i class="fa-solid fa-bolt" style="margin-bottom: 4px; font-size: 1.1rem;"></i> Invertir
                 </button>
 
@@ -103,9 +103,9 @@
         </div>
     </section>
 
-    <section id="planes" class="view">
+    <section id="planes" class="view" style="display: none;">
         <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-server" style="color: var(--blue-tg); margin-right: 6px;"></i>Contratar Potencia</h2>
-        
+
         <div class="stat-card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 7, 10, 0.9) 100%); padding: 15px; border-radius: 16px; margin-bottom: 15px; text-align: center; box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);">
             <span style="font-size: 0.6rem; color: #10b981; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">SISTEMA ACTIVO ÚNICO</span>
             <span style="font-size: 1.1rem; font-weight: 800; color: #fff; display: block; letter-spacing: 0.5px;">NODO ALPHA QUANTUM</span>
@@ -133,7 +133,7 @@
                 </div>
                 <input type="number" id="invest-amount" placeholder="Min 0.1 USDT" min="0.1" step="0.1" oninput="calculateROI()">
             </div>
-            
+
             <div style="background: rgba(5, 7, 10, 0.7); border-radius: 14px; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.06); text-align: left;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
                     <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 12px;"></i> Rendimiento:</span>
@@ -155,7 +155,7 @@
         </div>
     </section>
 
-    <section id="red" class="view">
+    <section id="red" class="view" style="display: none;">
         <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: var(--blue-tg); margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
         <div class="main-card neon-glow-card" style="text-align: center; margin-bottom: 15px; padding: 12px; border-radius: 16px;">
             <div class="balance-val" style="justify-content: center; font-size: 1.8rem; font-weight: bold; font-family: monospace; text-shadow: 0 0 10px rgba(0,136,204,0.4); margin: 0;" id="ref-count">0</div>
@@ -194,7 +194,7 @@
         </div>
     </section>
 
-    <section id="misiones" class="view">
+    <section id="misiones" class="view" style="display: none;">
         <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-gift" style="color: #10b981; margin-right: 6px;"></i>Incentivos de Expansión</h2>
         <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
             <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-brands fa-telegram" style="font-size: 1.3rem; color: #0088cc;"></i></div>
@@ -208,9 +208,9 @@
         </div>
     </section>
 
-    <section id="history" class="view">
+    <section id="history" class="view" style="display: none;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-            <i class="fa-solid fa-arrow-left" onclick="switchTab('dashboard')" style="cursor: pointer; color: var(--blue-tg); font-size: 1.2rem;"></i>
+            <i class="fa-solid fa-arrow-left" onclick="switchTab('dashboard', document.querySelectorAll('.fixed-nav-btn')[0])" style="cursor: pointer; color: var(--blue-tg); font-size: 1.2rem;"></i>
             <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: #fff;">Registros de Ledger</h2>
         </div>
         <div id="history-list"></div>
