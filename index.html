@@ -10,6 +10,120 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos críticos de rescate por si el archivo styles.css falla o no se vincula bien */
+        body {
+            background-color: #05070a;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: radial-gradient(circle at top right, rgba(0, 136, 204, 0.15), transparent 400px);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .app-shell {
+            padding-bottom: 90px; /* Espacio para que la barra inferior no tape nada */
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .view {
+            display: none;
+            padding: 0 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .view.active {
+            display: block !important;
+        }
+        .fixed-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 70px;
+            background: rgba(13, 17, 28, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 0 10px;
+            box-sizing: border-box;
+            z-index: 9999;
+        }
+        .fixed-nav-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .fixed-nav-btn i {
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+        .fixed-nav-btn.active {
+            color: #0088cc;
+        }
+        .fixed-nav-btn.active i {
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px rgba(0, 136, 204, 0.4);
+        }
+        .modern-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(5, 7, 10, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            transition: border-color 0.2s;
+        }
+        .modern-input-wrapper:focus-within {
+            border-color: #0088cc;
+        }
+        .modern-input-wrapper input {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            width: 100%;
+            outline: none;
+            font-family: monospace;
+            padding-left: 10px;
+        }
+        .telemetry-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .telemetry-progress {
+            height: 100%;
+            width: 85%;
+            background: #10b981;
+            border-radius: 10px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
@@ -23,15 +137,15 @@
             </div>
             <div style="display: flex; flex-direction: column; justify-content: center;">
                 <h2 id="user-full-name" style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #fff; line-height: 1.1;">Cargando...</h2>
-                <span id="user-id" style="font-size: 0.65rem; color: var(--blue-tg); font-weight: 700; margin-top: 2px; font-family: monospace;">ID: 0000000000</span>
+                <span id="user-id" style="font-size: 0.65rem; color: #0088cc; font-weight: 700; margin-top: 2px; font-family: monospace;">ID: 0000000000</span>
             </div>
         </div>
     </div>
 
     <section id="dashboard" class="view active">
-        <div class="main-card neon-glow-card" style="background: linear-gradient(180deg, rgba(0,136,204,0.18) 0%, rgba(13,17,28,0.9) 100%); border-radius: 24px; padding: 25px; margin-bottom: 20px;">
+        <div class="main-card neon-glow-card" style="background: linear-gradient(180deg, rgba(0,136,204,0.18) 0%, rgba(13,17,28,0.9) 100%); border-radius: 24px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(0,136,204,0.15);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div class="balance-label" style="font-size: 0.65rem; opacity: 0.8; font-weight: 700;">BÓVEDA DE RECURSOS DIGITALES</div>
+                <div class="balance-label" style="font-size: 0.65rem; opacity: 0.8; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px;">BÓVEDA DE RECURSOS DIGITALES</div>
                 <div style="display: flex; align-items: center; gap: 5px; background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
                     <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
                     <span style="font-size: 0.6rem; font-weight: 800; color: #10b981; letter-spacing: 0.5px;">NODO ONLINE</span>
@@ -40,23 +154,23 @@
 
             <div class="balance-val" style="display: flex; align-items: baseline; gap: 5px; margin: 15px 0; font-size: 2.8rem; font-weight: 800;">
                 <span id="main-balance-hash" style="text-shadow: 0 0 10px rgba(255,255,255,0.3);">0</span>
-                <span style="font-size: 0.8rem; color: var(--blue-tg); font-weight: 700; letter-spacing: 1px;">HASH</span>
+                <span style="font-size: 0.8rem; color: #0088cc; font-weight: 700; letter-spacing: 1px;">HASH</span>
                 <span style="font-size: 0.9rem; color: #94a3b8; font-weight: 400; margin-left: auto;">≈ <span id="main-balance-usdt" style="color: #fff; font-weight: 700;">0.00</span> <small style="color: #10b981; font-weight: 700; font-size: 0.65rem;">USDT</small></span>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 20px;">
-                <button class="btn-action" onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])" style="background: var(--blue-tg); color: white; border: none; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
+                <button class="btn-action" onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])" style="background: #0088cc; color: white; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
                     <i class="fa-solid fa-bolt" style="margin-bottom: 4px; font-size: 1.1rem;"></i> Invertir
                 </button>
 
                 <div style="position: relative;">
-                    <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; font-size: 0.55rem; font-weight: 900; padding: 2px 6px; border-radius: 6px; z-index: 10; box-shadow: 0 0 8px #10b981;">+5% BONUS</span>
-                    <button class="btn-action" onclick="openReinvestModal()" style="background: rgba(255,255,255,0.05); color: white; width: 100%; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; border: 1px solid rgba(0,136,204,0.3); cursor: pointer;">
-                        <i class="fa-solid fa-rotate" style="color: var(--blue-tg); margin-bottom: 4px; font-size: 1.1rem;"></i> Reinvertir
+                    <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; font-size: 0.55rem; font-weight: 900; padding: 2px 6px; border-radius: 6px; z-index: 10; box-shadow: 0 0 8px #10b981; white-space: nowrap;">+5% BONUS</span>
+                    <button class="btn-action" onclick="openReinvestModal()" style="background: rgba(255,255,255,0.05); color: white; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; border: 1px solid rgba(0,136,204,0.3); cursor: pointer;">
+                        <i class="fa-solid fa-rotate" style="color: #0088cc; margin-bottom: 4px; font-size: 1.1rem;"></i> Reinvertir
                     </button>
                 </div>
 
-                <button class="btn-action" onclick="switchTab('history')" style="background: rgba(255,255,255,0.05); color: white; border: none; flex-direction: column; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
+                <button class="btn-action" onclick="switchTab('history')" style="background: rgba(255,255,255,0.05); color: white; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 5px; font-size: 0.75rem; font-weight: bold; height: 68px; border-radius: 16px; cursor: pointer;">
                     <i class="fa-solid fa-chart-line" style="margin-bottom: 4px; font-size: 1.1rem;"></i> Historial
                 </button>
             </div>
@@ -65,17 +179,17 @@
         <div class="main-card" style="background: rgba(13, 17, 28, 0.7); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 24px;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                 <div style="flex: 1;">
-                    <div class="balance-label" style="font-size: 0.65rem; font-weight: bold;">PROCESAMIENTO EN CURSO</div>
+                    <div class="balance-label" style="font-size: 0.65rem; font-weight: bold; color: #94a3b8;">PROCESAMIENTO EN CURSO</div>
                     <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 6px;">
                         <div style="font-size: 1.8rem; font-weight: 800; font-family: monospace; color: #fff;"><span id="mining-hash">0</span></div>
                         <div style="font-size: 0.7rem; color: #10b981; font-weight: 700;">GH/s</div>
                     </div>
-                    <div id="mining-speed" style="font-size: 0.7rem; color: var(--blue-tg); font-weight: bold; margin-top: 4px;">
+                    <div id="mining-speed" style="font-size: 0.7rem; color: #0088cc; font-weight: bold; margin-top: 4px;">
                         <i class="fa-solid fa-microchip"></i> 0.0 GH/s núcleos asignados
                     </div>
                 </div>
 
-                <div class="quantum-loader">
+                <div class="quantum-loader" style="animation: spin 4s linear infinite;">
                     <i class="fa-solid fa-atom" style="font-size: 1.8rem; color: #0088cc;"></i>
                 </div>
             </div>
@@ -93,18 +207,18 @@
                         <span>TEMP. PROCESADOR</span>
                         <span style="color: #f59e0b;">41°C</span>
                     </div>
-                    <div class="telemetry-bar"><div class="telemetry-progress" style="width: 55%; background: #f59e0b; animation-duration: 2s;"></div></div>
+                    <div class="telemetry-bar"><div class="telemetry-progress" style="width: 55%; background: #f59e0b;"></div></div>
                 </div>
             </div>
 
-            <button onclick="claimMining()" class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; margin-top: 20px; padding: 14px; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,136,204,0.3); font-weight: 800; cursor: pointer;">
+            <button onclick="claimMining()" class="btn-action" style="background: #0088cc; color: white; border: none; width: 100%; margin-top: 20px; padding: 14px; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,136,204,0.3); font-weight: 800; cursor: pointer; font-size: 0.85rem; letter-spacing: 0.5px;">
                 <i class="fa-solid fa-hand-holding-dollar"></i> RECLAMAR RECOMPENSAS IA
             </button>
         </div>
     </section>
 
-    <section id="planes" class="view" style="display: none;">
-        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-server" style="color: var(--blue-tg); margin-right: 6px;"></i>Contratar Potencia</h2>
+    <section id="planes" class="view">
+        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-server" style="color: #0088cc; margin-right: 6px;"></i>Contratar Potencia</h2>
 
         <div class="stat-card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 7, 10, 0.9) 100%); padding: 15px; border-radius: 16px; margin-bottom: 15px; text-align: center; box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);">
             <span style="font-size: 0.6rem; color: #10b981; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">SISTEMA ACTIVO ÚNICO</span>
@@ -125,10 +239,10 @@
             </div>
         </div>
 
-        <div class="main-card neon-glow-card" style="text-align: center; padding: 15px; border-radius: 20px;">
-            <div class="balance-label" style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; letter-spacing: 1px;">INYECTAR LIQUIDEZ REQUERIDA (USDT)</div>
+        <div class="main-card neon-glow-card" style="text-align: center; padding: 15px; border-radius: 20px; background: rgba(13, 17, 28, 0.7); border: 1px solid rgba(255,255,255,0.05);">
+            <div class="balance-label" style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; letter-spacing: 1px; color: #94a3b8;">INYECTAR LIQUIDEZ REQUERIDA (USDT)</div>
             <div class="modern-input-wrapper">
-                <div class="input-icon">
+                <div class="input-icon" style="display: flex; align-items: center;">
                     <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" style="width: 20px; height: 20px;">
                 </div>
                 <input type="number" id="invest-amount" placeholder="Min 0.1 USDT" min="0.1" step="0.1" oninput="calculateROI()">
@@ -136,33 +250,33 @@
 
             <div style="background: rgba(5, 7, 10, 0.7); border-radius: 14px; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.06); text-align: left;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 12px;"></i> Rendimiento:</span>
-                    <span id="calc-power" style="font-weight: 700; color: var(--blue-tg); font-family: monospace; font-size: 0.75rem;">0.0 GH/s</span>
+                    <span style="color: #94a3b8; font-size: 0.7rem;"><i class="fa-solid fa-bolt" style="color: #0088cc; width: 12px;"></i> Rendimiento:</span>
+                    <span id="calc-power" style="font-weight: 700; color: #0088cc; font-family: monospace; font-size: 0.75rem;">0.0 GH/s</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-cube" style="color: #10b981; width: 12px;"></i> Minado Estimado:</span>
-                    <span id="calc-hash" style="font-weight: 700; color: var(--success); font-family: monospace; font-size: 0.75rem;">0 HASH</span>
+                    <span style="color: #94a3b8; font-size: 0.7rem;"><i class="fa-solid fa-cube" style="color: #10b981; width: 12px;"></i> Minado Estimado:</span>
+                    <span id="calc-hash" style="font-weight: 700; color: #10b981; font-family: monospace; font-size: 0.75rem;">0 HASH</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1);">
-                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-circle-info" style="color: #f59e0b; width: 12px;"></i> Límites del Sistema:</span>
+                    <span style="color: #94a3b8; font-size: 0.7rem;"><i class="fa-solid fa-circle-info" style="color: #f59e0b; width: 12px;"></i> Límites del Sistema:</span>
                     <span style="font-weight: 800; color: #f59e0b; letter-spacing: 0.5px; font-size: 0.7rem;">MÍN. OPR: 0.1 USDT</span>
                 </div>
             </div>
 
-            <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; margin-top: 15px; height: 48px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; cursor: pointer;" onclick="openPayModal()">
+            <button class="btn-action" style="background: #0088cc; color: white; border: none; width: 100%; margin-top: 15px; height: 48px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; cursor: pointer;" onclick="openPayModal()">
                 <i class="fa-solid fa-satellite-dish"></i> PROPAGAR INTERCONEXIÓN
             </button>
         </div>
     </section>
 
-    <section id="red" class="view" style="display: none;">
-        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: var(--blue-tg); margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
-        <div class="main-card neon-glow-card" style="text-align: center; margin-bottom: 15px; padding: 12px; border-radius: 16px;">
-            <div class="balance-val" style="justify-content: center; font-size: 1.8rem; font-weight: bold; font-family: monospace; text-shadow: 0 0 10px rgba(0,136,204,0.4); margin: 0;" id="ref-count">0</div>
-            <div class="balance-label" style="font-size: 0.6rem; font-weight: bold; margin-top: 2px;">Nodos Enlazados a tu Red</div>
+    <section id="red" class="view">
+        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: #0088cc; margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
+        <div class="main-card neon-glow-card" style="text-align: center; margin-bottom: 15px; padding: 12px; border-radius: 16px; background: rgba(13, 17, 28, 0.7); border: 1px solid rgba(0,136,204,0.15);">
+            <div class="balance-val" style="display: flex; justify-content: center; font-size: 1.8rem; font-weight: bold; font-family: monospace; text-shadow: 0 0 10px rgba(0,136,204,0.4); margin: 0;" id="ref-count">0</div>
+            <div class="balance-label" style="font-size: 0.6rem; font-weight: bold; margin-top: 2px; color: #94a3b8;">Nodos Enlazados a tu Red</div>
         </div>
 
-        <div class="main-card" style="margin-bottom: 15px; padding: 10px; background: rgba(13,17,28,0.6); border-radius: 16px;">
+        <div class="main-card" style="margin-bottom: 15px; padding: 10px; background: rgba(13,17,28,0.6); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                 <div style="background: rgba(5,7,10,0.6); padding: 8px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2);">
                     <div style="color: #10b981; font-size: 0.55rem; font-weight: 800;">NIVEL 1 (8%)</div>
@@ -187,30 +301,30 @@
             </div>
         </div>
 
-        <div class="main-card" style="background: rgba(13,17,28,0.8); border-radius: 16px; padding: 15px;">
-            <div class="balance-label" style="margin-bottom: 6px; font-size: 0.6rem; font-weight: bold;">ENLACE DE RADAR PERSONAL</div>
-            <input type="text" id="ref-link" readonly value="Cargando enlace..." style="margin-bottom: 10px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #848da0; padding: 10px; border-radius: 10px; width: 100%; box-sizing: border-box; font-family: monospace;">
-            <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; height: 42px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer;" onclick="copyLink()"><i class="fa-solid fa-copy"></i> Encriptar y Copiar Enlace</button>
+        <div class="main-card" style="background: rgba(13,17,28,0.8); border-radius: 16px; padding: 15px; border: 1px solid rgba(255,255,255,0.05);">
+            <div class="balance-label" style="margin-bottom: 6px; font-size: 0.6rem; font-weight: bold; color: #94a3b8;">ENLACE DE RADAR PERSONAL</div>
+            <input type="text" id="ref-link" readonly value="Cargando enlace..." style="margin-bottom: 10px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #848da0; padding: 10px; border-radius: 10px; width: 100%; box-sizing: border-box; font-family: monospace; outline: none;">
+            <button class="btn-action" style="background: #0088cc; color: white; border: none; width: 100%; height: 42px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer;" onclick="copyLink()"><i class="fa-solid fa-copy"></i> Encriptar y Copiar Enlace</button>
         </div>
     </section>
 
-    <section id="misiones" class="view" style="display: none;">
+    <section id="misiones" class="view">
         <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-gift" style="color: #10b981; margin-right: 6px;"></i>Incentivos de Expansión</h2>
-        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
+        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
             <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-brands fa-telegram" style="font-size: 1.3rem; color: #0088cc;"></i></div>
-            <div style="flex: 1;"><div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Canal</div><div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div></div>
+            <div style="flex: 1;"><div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Canal</div><div style="font-size: 0.7rem; color: #10b981; font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div></div>
             <button class="btn-action" onclick="window.open('https://t.me/FutNowInfo', '_blank')" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">UNIRSE</button>
         </div>
-        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
+        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
             <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-solid fa-comments" style="font-size: 1.3rem; color: #0088cc;"></i></div>
-            <div style="flex: 1;"><div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Chat</div><div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div></div>
+            <div style="flex: 1;"><div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Chat</div><div style="font-size: 0.7rem; color: #10b981; font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div></div>
             <button class="btn-action" onclick="window.open('https://t.me/FutNowchat', '_blank')" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">UNIRSE</button>
         </div>
     </section>
 
-    <section id="history" class="view" style="display: none;">
+    <section id="history" class="view">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-            <i class="fa-solid fa-arrow-left" onclick="switchTab('dashboard', document.querySelectorAll('.fixed-nav-btn')[0])" style="cursor: pointer; color: var(--blue-tg); font-size: 1.2rem;"></i>
+            <i class="fa-solid fa-arrow-left" onclick="switchTab('dashboard', document.querySelectorAll('.fixed-nav-btn')[0])" style="cursor: pointer; color: #0088cc; font-size: 1.2rem;"></i>
             <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: #fff;">Registros de Ledger</h2>
         </div>
         <div id="history-list"></div>
@@ -232,16 +346,40 @@
     </button>
 </nav>
 
-<div id="payModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,5,8,0.95); z-index:10000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(8px);">
-    <div class="main-card neon-glow-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border-radius: 20px;">
+<div id="payModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,5,8,0.95); z-index:10000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(8px); box-sizing: border-box;">
+    <div class="main-card neon-glow-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border-radius: 20px; background: #0d111c; border: 1px solid rgba(0,136,204,0.3);">
         <h3 style="margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem;">Canalizar Depósito</h3>
         <img id="qr-image" src="" style="width: 150px; height: 150px; background: white; padding: 8px; border-radius: 14px; margin: 0 auto 15px auto; display: block; box-shadow: 0 0 15px rgba(255,255,255,0.1);">
         <div id="pay-amount-display" style="font-size: 1.7rem; font-weight: 800; color: #10b981; font-family: monospace; margin-bottom: 10px;">0.00 USDT</div>
-        <div id="wallet-address-display" style="font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 14px; border-radius: 12px; border: 1px dashed var(--blue-tg); word-break: break-all; margin-bottom: 18px; font-family: monospace; color: #94a3b8;">Generando Dirección Alfa...</div>
-        <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección Hash</button>
-        <button onclick="closePayModal()" style="background:none; border:none; color:var(--text-secondary); margin-top:18px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">Abortar Transmisión</button>
+        <div id="wallet-address-display" style="font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 14px; border-radius: 12px; border: 1px dashed #0088cc; word-break: break-all; margin-bottom: 18px; font-family: monospace; color: #94a3b8;">Generando Dirección Alfa...</div>
+        <button class="btn-action" style="background: #0088cc; color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección Hash</button>
+        <button onclick="closePayModal()" style="background:none; border:none; color:#64748b; margin-top:18px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">Abortar Transmisión</button>
     </div>
 </div>
+
+<script>
+    // Sistema dinámico integrado para el cambio fluido de pestañas
+    function switchTab(tabId, buttonElement) {
+        // Ocultar todas las secciones
+        const sections = document.querySelectorAll('.view');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Mostrar la pestaña seleccionada
+        const activeSection = document.getElementById(tabId);
+        if (activeSection) {
+            activeSection.classList.add('active');
+        }
+
+        // Manejar el estado activo visual en la barra de navegación inferior
+        if (buttonElement) {
+            const buttons = document.querySelectorAll('.fixed-nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+        }
+    }
+</script>
 
 <script src="ui.js"></script>
 <script type="module" src="main.js"></script>
