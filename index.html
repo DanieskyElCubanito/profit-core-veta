@@ -8,177 +8,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="src/styles/theme.css">
 
-    <style>
-        /* --- 1. BASE Y ADAPTACIÓN MÓVIL (PANTALLA COMPLETA NATIVA) --- */
-        :root {
-            --blue-tg: #0088cc;
-            --success: #10b981;
-            --text-secondary: #94a3b8;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            margin: 0; 
-            padding: 0;
-            width: 100%;
-            height: 100dvh; /* Alto dinámico exacto para móviles */
-            overflow: hidden; /* Evita que la app web entera rebote */
-            background-color: #05070a;
-            color: #ffffff;
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            line-height: 1.5;
-            user-select: none;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Contenedor principal con scroll interno fluido */
-        .app-shell {
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            /* Padding inferior: Altura del nav (65px) + Zona segura iOS + Espacio extra */
-            padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px) + 20px);
-        }
-
-        /* --- 2. SISTEMA DE VISTAS --- */
-        .view {
-            display: none !important;
-            width: 100%;
-            padding: 20px;
-            opacity: 0;
-        }
-
-        .view.active {
-            display: block !important;
-            animation: slideUp 0.3s ease-out forwards;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- 3. DISEÑO CYBERPUNK Y COMPONENTES --- */
-        .neon-glow-card {
-            position: relative;
-            background: linear-gradient(135deg, rgba(0, 136, 204, 0.1) 0%, rgba(5, 7, 10, 0.8) 100%);
-            border: 1px solid rgba(0, 136, 204, 0.3) !important;
-            box-shadow: 0 0 15px rgba(0, 136, 204, 0.15);
-        }
-
-        /* Núcleo de Energía Giratorio */
-        .quantum-loader {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: 3px double transparent;
-            background-image: linear-gradient(rgba(5, 7, 10, 0.9), rgba(5, 7, 10, 0.9)), linear-gradient(135deg, #0088cc, #10b981);
-            background-origin: border-box;
-            background-clip: content-box, border-box;
-            animation: spinCore 4s linear infinite;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(0, 136, 204, 0.4);
-            flex-shrink: 0;
-        }
-
-        @keyframes spinCore {
-            0% { transform: rotate(0deg); box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
-            50% { transform: rotate(180deg); box-shadow: 0 0 25px rgba(16, 185, 129, 0.5); }
-            100% { transform: rotate(360deg); box-shadow: 0 0 15px rgba(0, 136, 204, 0.3); }
-        }
-
-        .pulse-text { animation: textPulse 2s infinite ease-in-out; }
-        @keyframes textPulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; color: #10b981; }
-        }
-
-        .telemetry-bar {
-            width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin-top: 6px;
-        }
-
-        .telemetry-progress {
-            height: 100%; width: 73%; background: linear-gradient(90deg, var(--blue-tg), #10b981);
-            animation: loadBar 3s infinite alternate;
-        }
-
-        @keyframes loadBar {
-            0% { width: 40%; }
-            100% { width: 85%; }
-        }
-
-        /* Inputs Modernizados */
-        input[type="number"] {
-            font-size: 2.2rem; font-weight: 800; text-align: center; background: rgba(0,0,0,0.4); 
-            border: 1px solid rgba(0, 136, 204, 0.2); color: #fff; width: 100%; outline: none; 
-            border-radius: 16px; padding: 10px 0; margin-bottom: 20px; font-family: monospace; letter-spacing: 1px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;
-        }
-        input[type="number"]:focus {
-            border-color: var(--blue-tg); box-shadow: 0 0 15px rgba(0, 136, 204, 0.3);
-        }
-
-        /* --- 4. BARRA DE NAVEGACIÓN INFERIOR OPTIMIZADA --- */
-        .fixed-nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: calc(65px + env(safe-area-inset-bottom, 0px)); /* Se adapta a la barra de iOS */
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            background: rgba(7, 10, 15, 0.92);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            z-index: 9999;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.6);
-        }
-
-        .fixed-nav-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            gap: 4px;
-            padding: 4px 0;
-            transition: all 0.2s ease;
-        }
-
-        .fixed-nav-btn i {
-            font-size: 1.25rem;
-            transition: transform 0.2s ease;
-        }
-
-        .fixed-nav-btn span {
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .fixed-nav-btn.active {
-            color: var(--blue-tg);
-            text-shadow: 0 0 8px rgba(0, 136, 204, 0.3);
-        }
-
-        .fixed-nav-btn.active i {
-            transform: translateY(-2px);
-            color: var(--blue-tg);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -198,7 +29,6 @@
     </div>
 
     <section id="dashboard" class="view active">
-
         <div class="main-card neon-glow-card" style="background: linear-gradient(180deg, rgba(0,136,204,0.18) 0%, rgba(13,17,28,0.9) 100%); border-radius: 24px; padding: 25px; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div class="balance-label" style="font-size: 0.65rem; opacity: 0.8; font-weight: 700;">BÓVEDA DE RECURSOS DIGITALES</div>
@@ -271,18 +101,14 @@
                 <i class="fa-solid fa-hand-holding-dollar"></i> RECLAMAR RECOMPENSAS IA
             </button>
         </div>
-
     </section>
 
-    <!-- PESTAÑA PLANES (NODOS) - ACTUALIZADA SISTEMA ÚNICO -->
     <section id="planes" class="view">
         <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-server" style="color: var(--blue-tg); margin-right: 6px;"></i>Contratar Potencia</h2>
-
-        <!-- Plan Único Cuántico -->
+        
         <div class="stat-card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 7, 10, 0.9) 100%); padding: 15px; border-radius: 16px; margin-bottom: 15px; text-align: center; box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);">
             <span style="font-size: 0.6rem; color: #10b981; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">SISTEMA ACTIVO ÚNICO</span>
             <span style="font-size: 1.1rem; font-weight: 800; color: #fff; display: block; letter-spacing: 0.5px;">NODO ALPHA QUANTUM</span>
-            
             <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.06);">
                 <div style="text-align: center;">
                     <span style="font-size: 0.55rem; color: #848da0; display: block; font-weight: bold;">RENDIMIENTO</span>
@@ -301,17 +127,16 @@
 
         <div class="main-card neon-glow-card" style="text-align: center; padding: 15px; border-radius: 20px;">
             <div class="balance-label" style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; letter-spacing: 1px;">INYECTAR LIQUIDEZ REQUERIDA (USDT)</div>
-
-            <!-- Input con validación nativa mínima de 0.1 -->
-           <div class="modern-input-wrapper">
-    <div class="input-icon">
-        <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" style="width: 20px; height: 20px;">
-    </div>
-    <input type="number" id="invest-amount" placeholder="Min 0.1 USDT" min="0.1" step="0.1" oninput="calculateROI()">
-</div>
+            <div class="modern-input-wrapper">
+                <div class="input-icon">
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" style="width: 20px; height: 20px;">
+                </div>
+                <input type="number" id="invest-amount" placeholder="Min 0.1 USDT" min="0.1" step="0.1" oninput="calculateROI()">
+            </div>
+            
             <div style="background: rgba(5, 7, 10, 0.7); border-radius: 14px; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.06); text-align: left;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.7 streamlined-font;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 12px;"></i> Rendimiento:</span>
+                    <span style="color: var(--text-secondary); font-size: 0.7rem;"><i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 12px;"></i> Rendimiento:</span>
                     <span id="calc-power" style="font-weight: 700; color: var(--blue-tg); font-family: monospace; font-size: 0.75rem;">0.0 GH/s</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
@@ -330,10 +155,8 @@
         </div>
     </section>
 
-    <!-- PESTAÑA RED (ARQUITECTURA) -->
     <section id="red" class="view">
         <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: var(--blue-tg); margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
-
         <div class="main-card neon-glow-card" style="text-align: center; margin-bottom: 15px; padding: 12px; border-radius: 16px;">
             <div class="balance-val" style="justify-content: center; font-size: 1.8rem; font-weight: bold; font-family: monospace; text-shadow: 0 0 10px rgba(0,136,204,0.4); margin: 0;" id="ref-count">0</div>
             <div class="balance-label" style="font-size: 0.6rem; font-weight: bold; margin-top: 2px;">Nodos Enlazados a tu Red</div>
@@ -371,51 +194,17 @@
         </div>
     </section>
 
-   <section id="misiones" class="view">
+    <section id="misiones" class="view">
         <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-gift" style="color: #10b981; margin-right: 6px;"></i>Incentivos de Expansión</h2>
-
         <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
-            <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fa-brands fa-telegram" style="font-size: 1.3rem; color: #0088cc;"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Canal</div>
-                <div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div>
-            </div>
+            <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-brands fa-telegram" style="font-size: 1.3rem; color: #0088cc;"></i></div>
+            <div style="flex: 1;"><div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Canal</div><div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div></div>
             <button class="btn-action" onclick="window.open('https://t.me/FutNowInfo', '_blank')" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">UNIRSE</button>
         </div>
-
         <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
-            <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fa-solid fa-comments" style="font-size: 1.3rem; color: #0088cc;"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Chat</div>
-                <div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div>
-            </div>
+            <div style="width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-solid fa-comments" style="font-size: 1.3rem; color: #0088cc;"></i></div>
+            <div style="flex: 1;"><div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Unirse al Chat</div><div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div></div>
             <button class="btn-action" onclick="window.open('https://t.me/FutNowchat', '_blank')" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">UNIRSE</button>
-        </div>
-
-        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
-            <div style="width: 45px; height: 45px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fa-solid fa-user-group" style="font-size: 1.3rem; color: #10b981;"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Invitar 3 amigos (Nivel 1)</div>
-                <div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div>
-            </div>
-            <button class="btn-action" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">VERIFICAR</button>
-        </div>
-
-        <div class="main-card" style="display: flex; align-items: center; gap: 15px; background: rgba(13,17,28,0.7); border-radius: 18px; padding: 15px; margin-bottom: 12px;">
-            <div style="width: 45px; height: 45px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fa-solid fa-users-rays" style="font-size: 1.3rem; color: #10b981;"></i>
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 0.9rem; color: #fff;">Invitar 10 amigos (Nivel 1)</div>
-                <div style="font-size: 0.7rem; color: var(--success); font-weight: bold; margin-top: 2px;">+25 GH/s de potencia</div>
-            </div>
-            <button class="btn-action" style="background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">VERIFICAR</button>
         </div>
     </section>
 
@@ -424,27 +213,22 @@
             <i class="fa-solid fa-arrow-left" onclick="switchTab('dashboard')" style="cursor: pointer; color: var(--blue-tg); font-size: 1.2rem;"></i>
             <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: #fff;">Registros de Ledger</h2>
         </div>
-        <div id="history-list">
-        </div>
+        <div id="history-list"></div>
     </section>
 </div>
 
 <nav class="fixed-nav-bar">
     <button class="fixed-nav-btn active" onclick="switchTab('dashboard', this)">
-        <i class="fa-solid fa-terminal"></i>
-        <span>Core</span>
+        <i class="fa-solid fa-terminal"></i> <span>Core</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('planes', this)">
-        <i class="fa-solid fa-circle-nodes"></i>
-        <span>Nodos</span>
+        <i class="fa-solid fa-circle-nodes"></i> <span>Nodos</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('red', this)">
-        <i class="fa-solid fa-diagram-project"></i>
-        <span>Red</span>
+        <i class="fa-solid fa-diagram-project"></i> <span>Red</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('misiones', this)">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>Misiones</span>
+        <i class="fa-solid fa-layer-group"></i> <span>Misiones</span>
     </button>
 </nav>
 
@@ -455,52 +239,12 @@
         <div id="pay-amount-display" style="font-size: 1.7rem; font-weight: 800; color: #10b981; font-family: monospace; margin-bottom: 10px;">0.00 USDT</div>
         <div id="wallet-address-display" style="font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 14px; border-radius: 12px; border: 1px dashed var(--blue-tg); word-break: break-all; margin-bottom: 18px; font-family: monospace; color: #94a3b8;">Generando Dirección Alfa...</div>
         <button class="btn-action" style="background: var(--blue-tg); color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: bold; cursor: pointer;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección Hash</button>
-        <button onclick="document.getElementById('payModal').style.display='none'" style="background:none; border:none; color:var(--text-secondary); margin-top:18px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">Abortar Transmisión</button>
+        <button onclick="closePayModal()" style="background:none; border:none; color:var(--text-secondary); margin-top:18px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">Abortar Transmisión</button>
     </div>
 </div>
 
-<script>
-    // Sistema de navegación blindado
-    window.switchTab = function(tabId, button) {
-        // 1. Ocultar todas las vistas
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-
-        // 2. Mostrar la vista seleccionada
-        const targetView = document.getElementById(tabId);
-        if(targetView) targetView.classList.add('active');
-
-        // 3. Quitar el estado activo de todos los botones de la barra inferior
-        document.querySelectorAll('.fixed-nav-btn').forEach(b => b.classList.remove('active'));
-
-        // 4. Activar el botón correcto
-        if(button) {
-            button.classList.add('active');
-        } else {
-            // Si el cambio de pestaña se hizo desde otro lado (ej. un botón en el dashboard)
-            const navBtn = document.querySelector(`.fixed-nav-btn[onclick*="${tabId}"]`);
-            if(navBtn) navBtn.classList.add('active');
-        }
-    };
-
-    // Funciones básicas para el Modal
-    window.openPayModal = function() { 
-        document.getElementById('payModal').style.display = 'flex'; 
-    };
-    window.closePayModal = function() { 
-        document.getElementById('payModal').style.display = 'none'; 
-    };
-</script>
-
-<script type="module">
-    // Aquí importas solo las funciones de lógica dura
-    import { calculateROI, claimMining, copyLink, copyAddress } from './src/main.js';
-
-    // Se las asignas a window para que los botones en el HTML las encuentren
-    window.calculateROI = calculateROI;
-    window.claimMining = claimMining;
-    window.copyLink = copyLink;
-    window.copyAddress = copyAddress;
-</script>
+<script src="ui.js"></script>
+<script type="module" src="main.js"></script>
 
 </body>
 </html>
