@@ -34,7 +34,6 @@ export async function openPayModal() {
     const amountInput = document.getElementById('invest-amount');
     const amount = parseFloat(amountInput?.value || 0);
 
-    // Ajustado al nuevo mínimo global de 0.1 USDT
     if (!amount || amount < 0.1) {
         const errorMsg = "❌ El mínimo de inyección de liquidez es 0.10 USDT";
         if (window.Telegram?.WebApp) {
@@ -47,7 +46,6 @@ export async function openPayModal() {
 
     isGeneratingWallet = true;
 
-    // --- OPTIMIZACIÓN DE VELOCIDAD: Apertura instantánea de la UI ---
     const payModal = document.getElementById('payModal');
     if (payModal) payModal.style.display = 'flex';
 
@@ -60,7 +58,6 @@ export async function openPayModal() {
     const qrImg = document.getElementById('qr-image');
     if (qrImg) qrImg.src = ''; 
 
-    // Los procesos pesados de red se ejecutan con el modal ya abierto en pantalla
     try {
         await notificarAlBot("intento_pago", amount);
         const data = await generarWalletBSC();
@@ -124,7 +121,38 @@ function startPaymentTimer(minutes) {
 }
 
 // ==========================================
-// 3. FUNCIONES DE INTERFAZ (UI HANDLERS)
+// 3. NAVEGACIÓN POR PESTAÑAS (TAB SYSTEM)
+// ==========================================
+export function switchTab(tabId) {
+    // 1. Ocultar todas las secciones de contenido
+    const sections = document.querySelectorAll('.tab-content');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // 2. Mostrar la sección seleccionada
+    const activeSection = document.getElementById(tabId);
+    if (activeSection) {
+        // Usamos 'block' o 'flex' según requiera tu diseño visual
+        activeSection.style.display = 'block'; 
+    }
+
+    // 3. Remover la clase 'active' de todos los botones de pestañas
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // 4. Añadir la clase 'active' al botón que fue presionado
+    // Busca el botón que tenga el atributo onclick apuntando a este tabId
+    const activeButton = document.querySelector(`.tab-button[onclick*="${tabId}"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+}
+
+// ==========================================
+// 4. FUNCIONES DE INTERFAZ (UI HANDLERS)
 // ==========================================
 export function copyLink() {
     const refInput = document.getElementById('ref-link');
@@ -152,7 +180,6 @@ export function copyAddress() {
     }
 }
 
-// Sistema unificado: 5% diario fijo por 40 días, mínimo 0.1 USDT
 export function calculateROI() {
     const amountInput = document.getElementById('invest-amount');
     const calcPower = document.getElementById('calc-power');
@@ -164,7 +191,6 @@ export function calculateROI() {
     if (amount >= 0.1) {
         if (calcPower) calcPower.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--blue-tg); width: 15px;"></i> ${(amount * 1000).toLocaleString()} GH/s`;
 
-        // 5% diario fijo
         const dailyPercentage = 0.05; 
         const dailyProfitUSDT = amount * dailyPercentage;
         const dailyHash = Math.floor(dailyProfitUSDT * 1000); 
@@ -186,7 +212,7 @@ export function claimMining() {
 }
 
 // ==========================================
-// 4. SECUENCIA DE ARRANQUE (BOOT SEQUENCE)
+// 5. SECUENCIA DE ARRANQUE (BOOT SEQUENCE)
 // ==========================================
 window.onload = () => {
     console.log("Iniciando protocolos del sistema...");
@@ -202,7 +228,6 @@ window.onload = () => {
             const tgData = window.Telegram?.WebApp?.initDataUnsafe;
             const urlParams = new URLSearchParams(window.location.search);
 
-            // --- ACTUALIZACIÓN: Datos de Perfil ---
             if (tgData?.user) {
                 state.userId = tgData.user.id;
                 
@@ -223,7 +248,6 @@ window.onload = () => {
 
             console.log(`[OK] Enlace establecido. Operador ID: ${state.userId}`);
 
-            // --- VINCULACIÓN DINÁMICA DE EVENTOS EN UI ---
             const amountInput = document.getElementById('invest-amount');
             if (amountInput) {
                 amountInput.addEventListener('input', calculateROI);
@@ -234,6 +258,10 @@ window.onload = () => {
 
             startMiningEngine();
 
+            // --- INICIALIZACIÓN DE PESTAÑA DEFAULT ---
+            // Arranca mostrando la sección principal (puedes cambiar 'dashboard' por el ID de tu contenedor principal)
+            switchTab('dashboard');
+
         } catch (error) {
             console.error("[CRÍTICO] Fallo en la matriz de inicio:", error);
         }
@@ -241,7 +269,7 @@ window.onload = () => {
 };
 
 // ==========================================
-// 5. EXPORTAR AL ENTORNO GLOBAL
+// 6. EXPORTAR AL ENTORNO GLOBAL
 // ==========================================
 window.openPayModal = openPayModal;
 window.closePayModal = closePayModal;
@@ -249,3 +277,4 @@ window.copyLink = copyLink;
 window.copyAddress = copyAddress;
 window.calculateROI = calculateROI;
 window.claimMining = claimMining;
+window.switchTab = switchTab; // <-- Exportado para usar en el HTML
