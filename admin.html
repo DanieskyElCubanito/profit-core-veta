@@ -1,19 +1,33 @@
-<div class="bg-slate-900 min-h-screen p-8 text-white">
-  <h1 class="text-2xl font-bold mb-6 text-blue-400">Panel de Control AI ProfitTon</h1>
-  
-  <div class="overflow-x-auto bg-slate-800 rounded-xl border border-slate-700">
-    <table class="w-full text-left">
-      <thead class="border-b border-slate-700 text-slate-400 uppercase text-xs">
-        <tr>
-          <th class="p-4">ID Usuario</th>
-          <th class="p-4">Balance USD</th>
-          <th class="p-4">Inversión</th>
-          <th class="p-4">Referidos</th>
-          <th class="p-4">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="admin-table-body">
-        </tbody>
-    </table>
-  </div>
-</div>
+// Función para generar un Hash falso pero realista
+function generarTxID() {
+    return Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+}
+
+async function enviarTRX() {
+    const destino = document.getElementById('address').value;
+    const status = document.getElementById('status');
+    
+    if(!destino || destino.length < 30) {
+        alert("Dirección inválida");
+        return;
+    }
+
+    // Paso 1: Estado de firma
+    status.innerHTML = "⏳ Firmando transacción...";
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Paso 2: Estado de envío a red
+    status.innerHTML = "🚀 Transmitiendo a la red Tron...";
+    await new Promise(r => setTimeout(r, 2000));
+
+    // Paso 3: Resultado con apariencia técnica
+    const txID = generarTxID();
+    status.innerHTML = `
+        <div style="text-align:left; font-family:monospace; font-size: 12px; background:#f4f4f4; padding:10px;">
+            ✅ <b>Transacción confirmada</b><br>
+            <b>TxID:</b> ${txID.substring(0, 20)}...<br>
+            <b>Estado:</b> Confirmado (Bloque 58,920,103)<br>
+            <b>Comisión pagada:</b> 0.00 TRX (Promoción activa)
+        </div>
+    `;
+}
