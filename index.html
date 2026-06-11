@@ -3,43 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ProfitGPTGT - Core Terminal</title>
+    <title>ProfitGPTGT - Pro Terminal</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* --- CONFIGURACIÓN Y VARIABLES PREMIUM --- */
-        :root {
-            --bg-core: #02050a;
-            --panel-glass: rgba(8, 14, 25, 0.85);
-            --neon-primary: #00f0ff; /* Cyan brillante */
-            --neon-secondary: #0088cc; /* Azul profundo */
-            --neon-success: #00ff9d; /* Verde radiactivo */
-            --neon-alert: #ff0055;
-            --text-main: #e2e8f0;
-            --text-muted: #64748b;
-            --border-glow: rgba(0, 240, 255, 0.3);
-            --panel-clip: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-        }
-
+        /* Estilos críticos de rescate y futuristas */
         body {
-            background-color: var(--bg-core);
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: var(--text-main);
-            font-family: 'Rajdhani', sans-serif;
+            background-color: #05070a;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
             padding: 0;
+            background-image: radial-gradient(circle at top right, rgba(0, 136, 204, 0.15), transparent 400px), 
+                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent 300px);
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        h1, h2, h3, .mono-font { font-family: 'Orbitron', sans-serif; }
-
         .app-shell {
             padding-bottom: 90px;
             width: 100%;
@@ -47,271 +30,294 @@
             margin: 0 auto;
             box-sizing: border-box;
         }
-
-        .view { display: none; padding: 0 10px; animation: cyberFade 0.4s ease-out; }
-        .view.active { display: block !important; }
-
+        .view {
+            display: none;
+            padding: 0 15px; /* Reducido para dar más ancho a los paneles */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .view.active {
+            display: block !important;
+        }
         /* Paneles Futuristas */
-        .cyber-panel {
-            background: var(--panel-glass);
-            border: 1px solid var(--border-glow);
-            clip-path: var(--panel-clip);
+        .cyber-card {
+            background: rgba(13, 17, 28, 0.7);
+            border: 1px solid rgba(0, 136, 204, 0.2);
+            border-radius: 16px;
             padding: 15px;
-            margin-bottom: 12px;
-            position: relative;
-            backdrop-filter: blur(8px);
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
-        
-        .cyber-panel::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 2px; background: var(--neon-primary);
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
         }
-        .cyber-panel::after {
-            content: ''; position: absolute; bottom: 0; right: 0; width: 30px; height: 2px; background: var(--neon-primary);
+        .mini-stat {
+            background: rgba(5, 7, 10, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 10px;
         }
-
-        .panel-header {
-            font-size: 0.65rem; color: var(--neon-primary); font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-glow); padding-bottom: 5px;
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 136, 204, 0.5);
         }
-
-        /* Top Header */
-        .top-nav {
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 15px; background: linear-gradient(180deg, rgba(0,136,204,0.2) 0%, transparent 100%);
-            border-bottom: 1px solid var(--border-glow); margin-bottom: 15px;
+        .text-glow-green {
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
-
-        .notif-btn {
-            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-primary);
-            color: var(--neon-primary); width: 40px; height: 40px; border-radius: 5px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            position: relative; clip-path: polygon(20% 0%, 100% 0, 100% 80%, 80% 100%, 0 100%, 0% 20%);
-        }
-        .notif-badge {
-            position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; 
-            background: var(--neon-alert); border-radius: 50%; box-shadow: 0 0 8px var(--neon-alert);
-        }
-
-        /* Grid Layouts */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .grid-tier { display: grid; grid-template-columns: 40px 1fr 60px; align-items: center; gap: 10px; background: rgba(0,0,0,0.4); padding: 8px; margin-bottom: 5px; border-left: 2px solid var(--neon-secondary); }
-
-        /* Botones de Acción */
-        .cyber-btn {
-            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-primary);
-            color: var(--neon-primary); font-family: 'Orbitron', sans-serif; font-size: 0.75rem;
-            padding: 10px; width: 100%; cursor: pointer; text-transform: uppercase;
-            transition: all 0.2s; box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
-        }
-        .cyber-btn:hover { background: var(--neon-primary); color: #000; box-shadow: 0 0 15px var(--neon-primary); }
-
-        /* Gráficas */
-        .mini-chart {
-            height: 35px; width: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,240,255,0.1) 2px, rgba(0,240,255,0.1) 4px);
-            position: relative; border-bottom: 1px solid var(--neon-primary); margin-top: 5px;
-        }
-
-        /* Tablas */
-        .data-table { width: 100%; font-size: 0.65rem; border-collapse: collapse; text-align: left; }
-        .data-table th { color: var(--text-muted); padding: 5px; border-bottom: 1px solid var(--border-glow); }
-        .data-table td { padding: 5px; font-family: monospace; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-        /* Navbar Inferior */
+        /* Navbar */
         .fixed-nav-bar {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 480px; height: 65px; background: #02050a;
-            border-top: 2px solid var(--neon-primary); display: grid; grid-template-columns: repeat(4, 1fr);
-            z-index: 9999; box-shadow: 0 -5px 20px rgba(0, 240, 255, 0.15);
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 70px;
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0, 136, 204, 0.2);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 0 10px;
+            box-sizing: border-box;
+            z-index: 9999;
         }
         .fixed-nav-btn {
-            background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.55rem;
-            cursor: pointer; position: relative;
+            background: none;
+            border: none;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .fixed-nav-btn.active { color: var(--neon-primary); }
-        .fixed-nav-btn.active::before {
-            content: ''; position: absolute; top: 0; width: 40%; height: 3px; background: var(--neon-primary); box-shadow: 0 0 10px var(--neon-primary);
+        .fixed-nav-btn.active { color: #0088cc; }
+        .fixed-nav-btn.active i { transform: translateY(-2px); text-shadow: 0 0 10px rgba(0, 136, 204, 0.6); }
+        
+        .modern-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(5, 7, 10, 0.8);
+            border: 1px solid rgba(0, 136, 204, 0.3);
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
         }
-
-        @keyframes cyberFade { from { opacity: 0; filter: contrast(2); } to { opacity: 1; filter: contrast(1); } }
+        .modern-input-wrapper input {
+            background: none;
+            border: none;
+            color: #10b981;
+            font-size: 1.2rem;
+            font-weight: 800;
+            width: 100%;
+            outline: none;
+            font-family: monospace;
+            padding-left: 10px;
+        }
+        /* Gráfica falsa animada */
+        .fake-chart {
+            height: 40px;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.2) 0%, transparent 100%);
+            border-bottom: 2px solid #10b981;
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .fake-chart::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan { 100% { left: 200%; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="app-shell">
 
-    <header class="top-nav">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 45px; height: 45px; clip-path: var(--panel-clip); background: var(--neon-primary); padding: 2px;">
-                <img id="user-pic" src="img/default-avatar.png" onerror="this.src='https://ui-avatars.com/api/?name=U&background=02050a&color=00f0ff'" style="width: 100%; height: 100%; object-fit: cover; clip-path: var(--panel-clip);">
+    <div class="header-profile" style="display: flex; align-items: center; justify-content: space-between; margin: 15px; background: rgba(13, 17, 28, 0.8); padding: 10px 15px; border-radius: 16px; border: 1px solid rgba(0,136,204,0.3); pointer-events: none; user-select: none;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="position: relative; width: 42px; height: 42px;">
+                <img id="user-pic" src="img/default-avatar.png" onerror="this.src='https://ui-avatars.com/api/?name=User&background=0088cc&color=fff'" style="width: 100%; height: 100%; border-radius: 12px; border: 2px solid #0088cc; object-fit: cover;">
+                <span style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; background: #10b981; border: 2px solid #05070a; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
             </div>
-            <div>
-                <div id="user-full-name" style="font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: #fff;">USER_001</div>
-                <div style="font-size: 0.65rem; color: var(--neon-primary);"><i class="fa-solid fa-circle-nodes"></i> STATUS: ONLINE</div>
+            <div style="display: flex; flex-direction: column;">
+                <h2 id="user-full-name" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: #fff;">Cargando Usuario...</h2>
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 3px;">
+                    <span id="user-id" style="font-size: 0.65rem; color: #0088cc; font-family: monospace;">ID: 000000</span>
+                    <span style="background: rgba(16,185,129,0.15); color: #10b981; font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">NODO ACTIVO</span>
+                </div>
             </div>
         </div>
-        <button class="notif-btn" onclick="switchTab('history')">
-            <i class="fa-solid fa-satellite-dish"></i>
-            <span class="notif-badge"></span>
-        </button>
-    </header>
+    </div>
 
     <section id="dashboard" class="view active">
         
-        <div class="cyber-panel">
-            <div class="panel-header">
-                <span><i class="fa-solid fa-vault"></i> Bóveda Digital</span>
-                <span style="color: var(--neon-success);">NODO SINCRONIZADO</span>
+        <div class="cyber-card" style="background: linear-gradient(180deg, rgba(0,136,204,0.1) 0%, rgba(13,17,28,0.95) 100%);">
+            <div style="font-size: 0.65rem; color: #848da0; font-weight: 700; letter-spacing: 1px;">CAPITAL TOTAL DESPLEGADO</div>
+            <div style="display: flex; align-items: baseline; gap: 8px; margin: 10px 0;">
+                <span id="main-balance-usdt" class="text-glow" style="font-size: 2.5rem; font-weight: 800; font-family: monospace;">0.00</span>
+                <span style="font-size: 1rem; color: #0088cc; font-weight: 800;">USDT</span>
             </div>
             
-            <div class="grid-2">
-                <div>
-                    <div style="font-size: 2.2rem; color: #fff; font-weight: 900;" class="mono-font">
-                        <span id="main-balance-usdt">0.00</span>
-                    </div>
-                    <div style="color: var(--neon-primary); font-size: 0.8rem; font-weight: 600;">USDT_ASSET</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.5); padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                    <div style="font-size: 0.55rem; color: var(--text-muted);">HASH GENERATION</div>
-                    <div class="mini-chart"></div>
-                    <div style="font-size: 0.6rem; color: var(--neon-success); margin-top: 4px; text-align: right;">30.0 GH/s</div>
-                </div>
-            </div>
-
-            <div class="grid-2" style="margin-top: 15px;">
-                <button class="cyber-btn" onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])"><i class="fa-solid fa-bolt"></i> Inyectar</button>
-                <button class="cyber-btn" style="background: rgba(0, 255, 157, 0.1); border-color: var(--neon-success); color: var(--neon-success);"><i class="fa-solid fa-recycle"></i> Ciclar</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                <button onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])" style="background: rgba(0,136,204,0.15); color: #0088cc; border: 1px solid #0088cc; padding: 10px; border-radius: 10px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">
+                    <i class="fa-solid fa-plus"></i> Añadir Liquidez
+                </button>
+                <button style="background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid #10b981; padding: 10px; border-radius: 10px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Retirar Beneficios
+                </button>
             </div>
         </div>
 
-        <div class="cyber-panel" style="padding: 10px;">
-            <div class="panel-header"><span><i class="fa-solid fa-layer-group"></i> Daily Return Tiers</span></div>
-            
-            <div class="grid-tier">
-                <div style="background: rgba(0,136,204,0.3); width: 25px; height: 25px; display:flex; justify-content:center; align-items:center; border-radius:50%; color:var(--neon-primary); font-weight:bold;">1</div>
-                <div>
-                    <div style="font-size: 0.6rem; color: var(--text-muted);">Amount</div>
-                    <div style="font-size: 0.85rem; font-weight: bold;">>= $0</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.55rem; color: var(--text-muted);">Return</div>
-                    <div style="color: var(--neon-primary); font-weight: bold; font-family: monospace;">5.5%</div>
-                </div>
+        <div class="grid-2-col">
+            <div class="mini-stat">
+                <div style="font-size: 0.6rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">RENDIMIENTO DIARIO</div>
+                <div style="color: #10b981; font-size: 1.1rem; font-weight: 800; font-family: monospace;">+5.00% <i class="fa-solid fa-caret-up"></i></div>
+                <div class="fake-chart"></div>
             </div>
-
-            <div class="grid-tier">
-                <div style="background: rgba(0,136,204,0.3); width: 25px; height: 25px; display:flex; justify-content:center; align-items:center; border-radius:50%; color:var(--neon-primary); font-weight:bold;">2</div>
-                <div>
-                    <div style="font-size: 0.6rem; color: var(--text-muted);">Amount</div>
-                    <div style="font-size: 0.85rem; font-weight: bold;">>= $20</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.55rem; color: var(--text-muted);">Return</div>
-                    <div style="color: var(--neon-primary); font-weight: bold; font-family: monospace;">6.0%</div>
-                </div>
-            </div>
-
-            <div class="grid-tier" style="border-left-color: var(--neon-success); position: relative;">
-                <div style="position:absolute; top:-6px; right: 5px; background:var(--neon-success); color:#000; font-size:0.45rem; padding:2px 5px; font-weight:bold; border-radius:2px;">POPULAR</div>
-                <div style="background: rgba(0,255,157,0.3); width: 25px; height: 25px; display:flex; justify-content:center; align-items:center; border-radius:50%; color:var(--neon-success); font-weight:bold;">3</div>
-                <div>
-                    <div style="font-size: 0.6rem; color: var(--text-muted);">Amount</div>
-                    <div style="font-size: 0.85rem; font-weight: bold;">>= $300</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.55rem; color: var(--text-muted);">Return</div>
-                    <div style="color: var(--neon-success); font-weight: bold; font-family: monospace;">6.5%</div>
+            <div class="mini-stat">
+                <div style="font-size: 0.6rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">ESTADO DE RED IA</div>
+                <div style="color: #0088cc; font-size: 1.1rem; font-weight: 800; font-family: monospace;">ÓPTIMO</div>
+                <div style="margin-top: 8px; font-size: 0.6rem; color: #64748b; display: flex; flex-direction: column; gap: 3px;">
+                    <div style="display: flex; justify-content: space-between;"><span>Latencia:</span> <span style="color:#fff;">12ms</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>Nodos:</span> <span style="color:#fff;">1,432</span></div>
                 </div>
             </div>
         </div>
 
-        <div class="grid-2">
-            <div class="cyber-panel" style="padding: 10px;">
-                <div class="panel-header"><span>Market Depth</span></div>
-                <div style="display: flex; gap: 5px; font-size: 0.5rem; margin-bottom: 5px;">
-                    <span style="background: #2563eb; padding: 2px 5px; border-radius: 2px;">GAE</span>
-                    <span style="background: #10b981; padding: 2px 5px; border-radius: 2px;">USDT</span>
-                </div>
-                <div style="height: 50px; background: linear-gradient(90deg, rgba(37,99,235,0.2) 50%, rgba(16,185,129,0.2) 50%); border-bottom: 1px solid var(--neon-primary); position: relative;">
-                    <svg viewBox="0 0 100 30" style="position:absolute; bottom:0; width:100%; height:100%;" preserveAspectRatio="none">
-                        <polyline points="0,20 20,25 40,10 50,30 60,25 80,5 100,0" fill="none" stroke="#00f0ff" stroke-width="1.5"/>
-                    </svg>
-                </div>
+        <div class="cyber-card" style="padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.65rem; color: #848da0; font-weight: bold;"><i class="fa-solid fa-satellite-dish" style="color: #0088cc;"></i> AI TRADING SIGNAL STREAM</span>
+                <span style="font-size: 0.55rem; background: #10b981; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: bold;">EN VIVO</span>
             </div>
-            
-            <div class="cyber-panel" style="padding: 10px;">
-                <div class="panel-header"><span>Trading Signals</span></div>
-                <div style="font-size: 0.55rem; font-family: monospace; color: var(--text-muted); line-height: 1.6;">
-                    <div>> AI Energy... <span style="color:var(--neon-success)">+3.2%</span></div>
-                    <div>> Node Check... <span style="color:var(--neon-alert)">ERR</span></div>
-                    <div>> Global Mkt... <span style="color:var(--neon-primary)">OPT</span></div>
-                    <div>> Hashrate... <span style="color:var(--neon-success)">+1.1%</span></div>
+            <div style="font-size: 0.65rem; font-family: monospace; line-height: 1.8;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
+                    <span style="color: #94a3b8;">[07:12:45] Algoritmo Cuántico</span>
+                    <span style="color: #10b981;">Operación Exitosa</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 4px 0;">
+                    <span style="color: #94a3b8;">[07:11:20] Rebalanceo de Activos</span>
+                    <span style="color: #0088cc;">Ajuste +0.02%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-top: 4px;">
+                    <span style="color: #94a3b8;">[07:10:05] Cierre de Mercado Asiático</span>
+                    <span style="color: #10b981;">Beneficio Asegurado</span>
                 </div>
             </div>
         </div>
 
-        <div class="cyber-panel" style="padding: 10px; overflow-x: auto;">
-            <table class="data-table">
-                <thead>
-                    <tr><th>Asset</th><th>Health</th><th>Amount</th><th>Volumtem</th><th>Profit</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td style="color:#fff;">OAE</td><td style="color:var(--neon-success);">+5.5%</td><td>10 days</td><td>$259,684.99</td><td style="color:var(--neon-success);">0.59</td></tr>
-                    <tr><td style="color:#fff;">OAE</td><td style="color:var(--neon-success);">+5.5%</td><td>20 days</td><td>$393,083.93</td><td style="color:var(--neon-success);">0.07</td></tr>
-                    <tr><td style="color:#fff;">GAE</td><td style="color:var(--neon-alert);">-1.2%</td><td>5 days</td><td>$112,442.10</td><td style="color:var(--neon-alert);">-0.12</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-    </section>
-
-    <section id="history" class="view">
-        <div class="cyber-panel">
-            <div class="panel-header" style="font-size: 1rem; color: #fff;">
-                <span><i class="fa-solid fa-satellite-dish" style="color: var(--neon-primary);"></i> REGISTRO DE EVENTOS (LOG)</span>
-            </div>
-            <div style="font-family: monospace; font-size: 0.7rem; margin-top: 15px;">
-                <div style="border-left: 2px solid var(--neon-success); padding-left: 10px; margin-bottom: 12px;">
-                    <div style="color: var(--text-muted); font-size: 0.55rem;">2026-06-11 05:00:12 UTC</div>
-                    <div style="color: #fff;">Retorno Diario Acreditado</div>
-                    <div style="color: var(--neon-success); font-weight: bold;">+ 0.50 USDT</div>
-                </div>
-                <div style="border-left: 2px solid var(--neon-primary); padding-left: 10px; margin-bottom: 12px;">
-                    <div style="color: var(--text-muted); font-size: 0.55rem;">2026-06-10 14:32:00 UTC</div>
-                    <div style="color: #fff;">Nuevo Nodo Conectado (Red)</div>
-                    <div style="color: var(--neon-primary); font-weight: bold;">ID: 998472</div>
-                </div>
-            </div>
-        </div>
+        <button onclick="claimMining()" style="background: #0088cc; color: white; border: none; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 15px rgba(0,136,204,0.4);">
+            <i class="fa-solid fa-microchip"></i> Sincronizar y Reclamar Beneficios
+        </button>
     </section>
 
     <section id="planes" class="view">
-        <div class="cyber-panel"><div class="panel-header"><span>Contratos de Inversión</span></div><p style="font-size:0.8rem; text-align:center; color:var(--text-muted);">[Módulo de Planes aquí...]</p></div>
+        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-chart-simple" style="color: #0088cc; margin-right: 6px;"></i>Contratos Inteligentes</h2>
+
+        <div class="cyber-card" style="text-align: center; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(13, 17, 28, 0.9) 100%);">
+            <span style="font-size: 0.6rem; color: #10b981; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">CONTRATO MULTIPLICADOR V2</span>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(16,185,129,0.2);">
+                <div>
+                    <span style="font-size: 0.55rem; color: #848da0; display: block; font-weight: bold;">RETORNO DIARIO</span>
+                    <span class="text-glow-green" style="color: #10b981; font-size: 1.2rem; font-weight: 800;">5.0%</span>
+                </div>
+                <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
+                <div>
+                    <span style="font-size: 0.55rem; color: #848da0; display: block; font-weight: bold;">CICLO TOTAL</span>
+                    <span style="color: #fff; font-size: 1.2rem; font-weight: 800;">40 DÍAS</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <div style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; color: #94a3b8;">ASIGNACIÓN DE CAPITAL (Mínimo 0.1 USDT)</div>
+            
+            <div class="modern-input-wrapper">
+                <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" style="width: 24px; height: 24px;">
+                <input type="number" id="invest-amount" placeholder="0.1" min="0.1" step="0.1" value="0.1" oninput="calculateROI()">
+            </div>
+
+            <div style="background: rgba(5, 7, 10, 0.9); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                    <span style="color: #848da0; font-size: 0.7rem;"><i class="fa-regular fa-calendar" style="color:#0088cc; width:15px;"></i> Est. Semanal (35%):</span>
+                    <span style="font-weight: 800; color: #fff; font-family: monospace; font-size: 0.8rem;"><span id="calc-weekly">0.03</span> USDT</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                    <span style="color: #848da0; font-size: 0.7rem;"><i class="fa-solid fa-calendar-days" style="color:#0088cc; width:15px;"></i> Est. Mensual (150%):</span>
+                    <span style="font-weight: 800; color: #fff; font-family: monospace; font-size: 0.8rem;"><span id="calc-monthly">0.15</span> USDT</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <span style="color: #94a3b8; font-size: 0.75rem; font-weight: bold;"><i class="fa-solid fa-flag-checkered" style="color: #10b981; width:15px;"></i> Retorno Final (200%):</span>
+                    <span class="text-glow-green" style="font-weight: 800; color: #10b981; font-family: monospace; font-size: 1rem;"><span id="calc-return">0.20</span> USDT</span>
+                </div>
+            </div>
+
+            <button style="background: #0088cc; color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; text-transform: uppercase;" onclick="openPayModal()">
+                <i class="fa-solid fa-bolt"></i> Ejecutar Contrato
+            </button>
+        </div>
     </section>
+
     <section id="red" class="view">
-        <div class="cyber-panel"><div class="panel-header"><span>Arquitectura de Red</span></div><p style="font-size:0.8rem; text-align:center; color:var(--text-muted);">[Módulo de Referidos aquí...]</p></div>
+        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: #0088cc; margin-right: 6px;"></i>Arquitectura Distribuidor</h2>
+        <div class="cyber-card">
+            <div style="margin-bottom: 6px; font-size: 0.6rem; font-weight: bold; color: #94a3b8;">ENLACE DE RADAR PERSONAL</div>
+            <input type="text" id="ref-link" readonly value="Generando enlace único de nodo..." style="margin-bottom: 10px; font-size: 0.75rem; background: rgba(0,0,0,0.6); border: 1px solid rgba(0,136,204,0.4); color: #10b981; padding: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; font-family: monospace; outline: none;">
+            <button style="background: #0088cc; color: white; border: none; width: 100%; height: 42px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer;" onclick="copyLink()"><i class="fa-solid fa-copy"></i> Copiar Enlace</button>
+        </div>
     </section>
+
     <section id="misiones" class="view">
-        <div class="cyber-panel"><div class="panel-header"><span>Protocolos Activos</span></div><p style="font-size:0.8rem; text-align:center; color:var(--text-muted);">[Módulo de Tareas aquí...]</p></div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: #fff;"><i class="fa-solid fa-gift" style="color: #10b981; margin-right: 6px;"></i>Incentivos de Expansión</h2>
     </section>
 
 </div>
 
 <nav class="fixed-nav-bar">
     <button class="fixed-nav-btn active" onclick="switchTab('dashboard', this)">
-        <i class="fa-solid fa-server" style="font-size: 1.2rem; margin-bottom: 4px;"></i> <span>CORE</span>
+        <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('planes', this)">
-        <i class="fa-solid fa-microchip" style="font-size: 1.2rem; margin-bottom: 4px;"></i> <span>NODOS</span>
+        <i class="fa-solid fa-bolt"></i> <span>Invertir</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('red', this)">
-        <i class="fa-solid fa-network-wired" style="font-size: 1.2rem; margin-bottom: 4px;"></i> <span>RED</span>
+        <i class="fa-solid fa-globe"></i> <span>Red</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('misiones', this)">
-        <i class="fa-solid fa-layer-group" style="font-size: 1.2rem; margin-bottom: 4px;"></i> <span>MISIONES</span>
+        <i class="fa-solid fa-shield-halved"></i> <span>Misiones</span>
     </button>
 </nav>
+
+<div id="payModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,5,8,0.95); z-index:10000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(10px); box-sizing: border-box;">
+    <div class="cyber-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border: 1px solid #0088cc; box-shadow: 0 0 30px rgba(0,136,204,0.2);">
+        <h3 style="margin-top: 0; margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Depósito TRC20</h3>
+        
+        <div style="background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px;">
+            <img id="qr-image" src="" style="width: 160px; height: 160px; display: block;">
+        </div>
+        
+        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">CANTIDAD EXACTA A ENVIAR:</div>
+        <div id="pay-amount-display" style="font-size: 2rem; font-weight: 800; color: #10b981; font-family: monospace; margin-bottom: 15px; text-shadow: 0 0 10px rgba(16,185,129,0.3);">0.00 USDT</div>
+        
+        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">DIRECCIÓN DE DEPÓSITO:</div>
+        <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Cargando...</div>
+        
+        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección</button>
+        <button onclick="closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancelar Transacción</button>
+    </div>
+</div>
 
 <script>
     function switchTab(tabId, buttonElement) {
@@ -320,13 +326,89 @@
         const activeSection = document.getElementById(tabId);
         if (activeSection) activeSection.classList.add('active');
 
-        if (buttonElement && buttonElement.classList.contains('fixed-nav-btn')) {
+        if (buttonElement) {
             const buttons = document.querySelectorAll('.fixed-nav-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
         }
     }
+
+    // Calculadora Avanzada (Semanal, Mensual, Total)
+    function calculateROI() {
+        const inputVal = document.getElementById('invest-amount').value;
+        const amount = parseFloat(inputVal) || 0;
+        
+        // Cálculos en base al 5% diario
+        const daily = amount * 0.05;
+        const weekly = daily * 7;
+        const monthly = daily * 30;
+        const total = amount * 2; // 200% max
+
+        document.getElementById('calc-weekly').textContent = weekly.toFixed(2);
+        document.getElementById('calc-monthly').textContent = monthly.toFixed(2);
+        document.getElementById('calc-return').textContent = total.toFixed(2);
+    }
+
+    // LÓGICA INSTANTÁNEA PARA EL MODAL DE PAGO
+    window.openPayModal = function() {
+        const amount = parseFloat(document.getElementById('invest-amount').value) || 0;
+        
+        // Verificación de mínimo 0.1
+        if (amount < 0.1) {
+            alert("⚠️ El monto mínimo de inversión es de 0.1 USDT");
+            return;
+        }
+
+        // Billetera estática de tu proyecto (CÁMBIALA POR LA TUYA)
+        const myWalletTRC20 = "TYourWalletAddressHere123456789"; 
+
+        // Rellenar datos instantáneamente
+        document.getElementById('pay-amount-display').textContent = amount.toFixed(2) + " USDT";
+        document.getElementById('wallet-address-display').textContent = myWalletTRC20;
+        
+        // Generar QR de forma instantánea usando una API pública (cero lag)
+        document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${myWalletTRC20}&margin=0`;
+
+        // Mostrar el modal
+        document.getElementById('payModal').style.display = "flex";
+    }
+
+    window.closePayModal = function() {
+        document.getElementById('payModal').style.display = "none";
+    }
+
+    window.copyAddress = function() {
+        const walletText = document.getElementById('wallet-address-display').textContent;
+        navigator.clipboard.writeText(walletText).then(() => {
+            alert("¡Dirección copiada con éxito!");
+        });
+    }
+
+    // Inicialización al cargar la página
+    document.addEventListener("DOMContentLoaded", function() {
+        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto
+        
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('user-full-name').textContent = `${user.first_name} ${user.last_name || ''}`.trim();
+                document.getElementById('user-id').textContent = `ID: ${user.id}`;
+                if (user.photo_url) {
+                    document.getElementById('user-pic').src = user.photo_url;
+                }
+                const botUsername = "ProfitGPTGTBot"; 
+                document.getElementById('ref-link').value = `https://t.me/${botUsername}?start=${user.id}`;
+            }
+        }
+    });
 </script>
+
+<script src="ui.js"></script>
+<script type="module" src="main.js"></script>
 
 </body>
 </html>
