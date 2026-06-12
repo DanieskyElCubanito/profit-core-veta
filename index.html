@@ -3,26 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ProfitGPTGT - Pro Terminal</title>
+    <title>ProfitGPTGT - Core Terminal V3</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="styles.css">
     <style>
-        /* Estilos críticos de rescate y futuristas */
+        /* --- CONFIGURACIÓN Y VARIABLES PREMIUM --- */
+        :root {
+            --bg-core: #02050a;
+            --panel-glass: rgba(8, 14, 25, 0.85);
+            --neon-primary: #00f0ff; /* Cyan brillante */
+            --neon-secondary: #0088cc; /* Azul profundo */
+            --neon-success: #00ff9d; /* Verde radiactivo */
+            --neon-alert: #ff0055;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --border-glow: rgba(0, 240, 255, 0.3);
+            /* Sistema de cortes futuristas angulares */
+            --panel-clip: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
         body {
-            background-color: #05070a;
-            color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-core);
+            /* Fondo de cuadrícula cibernética animada */
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
             margin: 0;
             padding: 0;
-            background-image: radial-gradient(circle at top right, rgba(0, 136, 204, 0.15), transparent 400px), 
-                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent 300px);
             min-height: 100vh;
             overflow-x: hidden;
         }
+
+        /* UsamosOrbitron para encabezados de datos y Rajdhani para textos secundarios */
+        h1, h2, h3, h4, .mono-font { font-family: 'Orbitron', sans-serif; }
+
         .app-shell {
             padding-bottom: 90px;
             width: 100%;
@@ -30,493 +50,274 @@
             margin: 0 auto;
             box-sizing: border-box;
         }
-        .view {
-            display: none;
-            padding: 0 15px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .view.active {
-            display: block !important;
-        }
 
-        /* Paneles Futuristas */
-        .cyber-card {
-            background: rgba(13, 17, 28, 0.7);
-            border: 1px solid rgba(0, 136, 204, 0.2);
-            border-radius: 16px;
+        .view { display: none; padding: 0 10px; animation: cyberFade 0.4s ease-out; }
+        .view.active { display: block !important; }
+
+        /* Paneles Futuristas Angular */
+        .cyber-panel {
+            background: var(--panel-glass);
+            border: 1px solid var(--border-glow);
+            clip-path: var(--panel-clip);
             padding: 15px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(5px);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 12px;
+            position: relative;
+            backdrop-filter: blur(8px);
         }
         
-        /* Banner Llamativo */
-        .cyber-banner {
-            background: linear-gradient(45deg, rgba(13, 17, 28, 0.9), rgba(0, 136, 204, 0.4)), url('https://images.unsplash.com/photo-1639762681485-074b7f4fc8bc?q=80&w=600&auto=format&fit=crop') center/cover;
-            height: 140px;
-            border-radius: 16px;
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(0, 136, 204, 0.5);
-            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.2);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 20px;
+        /* Detalles visuales de neón */
+        .cyber-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 2px; background: var(--neon-primary);
+        }
+        .cyber-panel::after {
+            content: ''; position: absolute; bottom: 0; right: 0; width: 30px; height: 2px; background: var(--neon-primary);
         }
 
-        .grid-2-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .grid-4-col {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .grid-3-col {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-            text-align: center;
+        .panel-header {
+            font-size: 0.65rem; color: var(--neon-primary); font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-glow); padding-bottom: 5px;
         }
 
-        .mini-stat {
-            background: rgba(5, 7, 10, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 10px;
+        /* Mecanismo Cripto en el Banner */
+        .banner-mechanic {
+            position: relative; width: 100%; height: 140px; background: rgba(5,7,10,0.8);
+            border: 2px solid var(--neon-primary); clip-path: var(--panel-clip); margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+        }
+        .mechanic-content { z-index: 10; text-align: center; color: #fff; }
+        .mechanic-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; perspective: 1000px; }
+        
+        /* Engranajes de Crypto logos */
+        .gear {
+            position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px cyan, inset 0 0 10px rgba(255,255,255,0.1); 
+            animation: gearSpin linear infinite; 
+            z-index: 1; opacity: 0.3; /* Subtle background */
+        }
+        .gear i { color: cyan; text-shadow: 0 0 10px cyan; font-size: 2.2rem; }
+        
+        .gear-center {
+            width: 130px; height: 130px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateZ(0deg);
+            background: linear-gradient(135deg, rgba(0, 136, 204, 0.4) 0%, transparent 100%);
+            animation-duration: 20s; animation-direction: reverse;
+        }
+        .gear-eth {
+            width: 80px; height: 80px; top: 10%; right: 10%;
+            background: linear-gradient(45deg, rgba(0, 240, 255, 0.3) 0%, transparent 100%);
+            animation-duration: 15s;
+        }
+        .gear-btc {
+            width: 90px; height: 90px; bottom: 5%; left: 5%;
+            background: linear-gradient(-45deg, rgba(16, 185, 129, 0.3) 0%, transparent 100%);
+            animation-duration: 18s;
         }
 
-        /* Iconos de acceso rápido */
-        .quick-action-btn {
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .quick-action-btn:active {
-            transform: scale(0.95);
-        }
-        .quick-action-icon {
-            background: rgba(0,136,204,0.15);
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 8px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0,136,204,0.4);
-            box-shadow: 0 0 10px rgba(0,136,204,0.2);
-        }
-        .quick-action-icon i {
-            color: #0088cc;
-            font-size: 1.3rem;
-            text-shadow: 0 0 8px rgba(0,136,204,0.6);
+        /* Top Header */
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 15px; background: linear-gradient(180deg, rgba(0,136,204,0.2) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-glow); margin-bottom: 15px;
         }
 
-        .text-glow {
-            text-shadow: 0 0 10px rgba(0, 136, 204, 0.5);
+        .header-btn {
+            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-primary);
+            color: var(--neon-primary); width: 40px; height: 40px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            position: relative; clip-path: polygon(20% 0%, 100% 0, 100% 80%, 80% 100%, 0 100%, 0% 20%);
         }
-        .text-glow-green {
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-        }
-        .text-glow-pink {
-            text-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
-        }
-
-        /* Progress Bar para misiones */
-        .progress-container {
-            background: rgba(0,0,0,0.5);
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 10px 0 5px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .progress-fill {
-            background: linear-gradient(90deg, #0088cc, #10b981);
-            height: 100%;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(16,185,129,0.5);
+        .header-badge {
+            position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; 
+            background: var(--neon-alert); border-radius: 50%; box-shadow: 0 0 8px var(--neon-alert);
         }
 
-        /* Navbar */
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; text-align: center; }
+
+        /* Botones de Acción Cyberpunk */
+        .cyber-btn {
+            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-primary);
+            color: var(--neon-primary); font-family: 'Orbitron', sans-serif; font-size: 0.75rem;
+            padding: 10px; width: 100%; cursor: pointer; text-transform: uppercase;
+            transition: all 0.2s; box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+        .cyber-btn:hover { background: var(--neon-primary); color: #000; box-shadow: 0 0 15px var(--neon-primary); }
+
+        /* Gráficas falsas animadas */
+        .mini-chart {
+            height: 35px; width: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,240,255,0.1) 2px, rgba(0,240,255,0.1) 4px);
+            position: relative; border-bottom: 1px solid var(--neon-primary); margin-top: 5px;
+        }
+
+        /* Navbar Inferior */
         .fixed-nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            height: 70px;
-            background: rgba(10, 14, 23, 0.95);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(0, 136, 204, 0.2);
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            padding: 0 10px;
-            box-sizing: border-box;
-            z-index: 9999;
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; height: 65px; background: #02050a;
+            border-top: 2px solid var(--neon-primary); display: grid; grid-template-columns: repeat(4, 1fr);
+            z-index: 9999; box-shadow: 0 -5px 20px rgba(0, 240, 255, 0.15);
         }
         .fixed-nav-btn {
-            background: none;
-            border: none;
-            color: #64748b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.55rem;
+            cursor: pointer; position: relative;
         }
-        .fixed-nav-btn.active { color: #0088cc; }
-        .fixed-nav-btn.active i { transform: translateY(-2px); text-shadow: 0 0 10px rgba(0, 136, 204, 0.6); }
-        
-        .modern-input-wrapper {
-            display: flex;
-            align-items: center;
-            background: rgba(5, 7, 10, 0.8);
-            border: 1px solid rgba(0, 136, 204, 0.3);
-            border-radius: 12px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-        }
-        .modern-input-wrapper input {
-            background: none;
-            border: none;
-            color: #10b981;
-            font-size: 1.2rem;
-            font-weight: 800;
-            width: 100%;
-            outline: none;
-            font-family: monospace;
-            padding-left: 10px;
+        .fixed-nav-btn.active { color: var(--neon-primary); }
+        .fixed-nav-btn.active::before {
+            content: ''; position: absolute; top: 0; width: 40%; height: 3px; background: var(--neon-primary); box-shadow: 0 0 10px var(--neon-primary);
         }
 
-        /* Gráfica falsa animada */
-        .fake-chart {
-            height: 40px;
-            width: 100%;
-            background: linear-gradient(180deg, rgba(16, 185, 129, 0.2) 0%, transparent 100%);
-            border-bottom: 2px solid #10b981;
-            margin-top: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        .fake-chart::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: scan 2s infinite linear;
-        }
-        @keyframes scan { 100% { left: 200%; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* Animaciones */
+        @keyframes gearSpin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        /* Reset para los otros gears sin translate center */
+        @keyframes gearSpinEther { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        @keyframes cyberFade { from { opacity: 0; filter: contrast(2); } to { opacity: 1; filter: contrast(1); } }
     </style>
 </head>
 <body>
 
 <div class="app-shell">
 
-    <div class="header-profile" style="display: flex; align-items: center; justify-content: space-between; margin: 15px; background: rgba(13, 17, 28, 0.8); padding: 10px 15px; border-radius: 16px; border: 1px solid rgba(0,136,204,0.3); pointer-events: none; user-select: none;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="position: relative; width: 42px; height: 42px;">
-                <img id="user-pic" src="img/default-avatar.png" onerror="this.src='https://ui-avatars.com/api/?name=User&background=0088cc&color=fff'" style="width: 100%; height: 100%; border-radius: 12px; border: 2px solid #0088cc; object-fit: cover;">
-                <span style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; background: #10b981; border: 2px solid #05070a; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+    <header class="top-nav">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 45px; height: 45px; clip-path: var(--panel-clip); background: var(--neon-primary); padding: 2px;">
+                <img id="user-pic" src="img/default-avatar.png" onerror="this.src='https://ui-avatars.com/api/?name=U&background=02050a&color=00f0ff'" style="width: 100%; height: 100%; object-fit: cover; clip-path: var(--panel-clip);">
             </div>
-            <div style="display: flex; flex-direction: column;">
-                <h2 id="user-full-name" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: #fff;">Cargando Usuario...</h2>
-                <div style="display: flex; gap: 8px; align-items: center; margin-top: 3px;">
-                    <span id="user-id" style="font-size: 0.65rem; color: #0088cc; font-family: monospace;">ID: 000000</span>
-                    <span style="background: rgba(16,185,129,0.15); color: #10b981; font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">NODO ACTIVO</span>
-                </div>
+            <div>
+                <div id="user-full-name" style="font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: Rajdhani, Rajdhani,Rajdhani, sans-serif; text-transform: uppercase;">USER_001</div>
+                <div style="font-size: 0 Rajdhani,sans-serif; color: var(--neon-primary);"><i class="fa-solid fa-circle-nodes"></i> STATUS: ONLINE</div>
             </div>
         </div>
-    </div>
+        <button class="header-btn" onclick="switchTab('history')">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span class="header-badge"></span>
+        </button>
+    </header>
 
     <section id="dashboard" class="view active">
         
-        <div class="cyber-banner">
-            <h3 style="margin: 0; font-size: 1.4rem; color: #fff; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">RED NEURONAL V2</h3>
-            <p style="margin: 5px 0 0; font-size: 0.8rem; color: #e2e8f0; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">Optimización de algoritmos en curso...</p>
-            <div style="position: absolute; right: -20px; bottom: -20px; opacity: 0.4;">
-                <i class="fa-brands fa-bitcoin" style="font-size: 8rem; color: #fff;"></i>
+        <div class="banner-mechanic">
+            <div class="mechanic-background">
+                <div class="gear gear-center" style="animation-duration: 20s;"><i class="fab fa-ethereum"></i></div>
+                <div class="gear gear-btc" style="animation-duration: 15s;"><i class="fab fa-bitcoin"></i></div>
+                <div class="gear gear-eth" style="animation-duration: 12s;"><i class="fab fa-tether"></i></div>
+            </div>
+            <div class="mechanic-content">
+                <h2 style="font-weight: 800; font-size: 1.4rem; color: #fff; margin:0; text-shadow: 0 0 10px cyan;">CÚPULA DE RETORNO ALFA</h2>
+                <p style="margin: 5px 0 0 0; font-size: 0.75rem; color: var(--neon-primary); font-family:Rajdhani,sans-serif; font-weight:bold;">SISTEMA DE ENGRANAJES CRIPTOGRÁFICOS ACTIVO...</p>
             </div>
         </div>
 
-        <div class="cyber-card" style="background: linear-gradient(180deg, rgba(0,136,204,0.1) 0%, rgba(13,17,28,0.95) 100%);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.7rem; color: #848da0; font-weight: 700; letter-spacing: 1px;">ACTIVOS TOTALES</div>
-                <div style="background: rgba(16,185,129,0.2); color: #10b981; font-size: 0.6rem; padding: 3px 8px; border-radius: 10px; font-weight: bold;">
-                    <i class="fa-solid fa-circle-check"></i> ONLINE
+        <div class="cyber-panel" style="background: linear-gradient(180deg, rgba(0,136,204,0.1) 0%, rgba(13,17,28,0.95) 100%);">
+            <div class="panel-header">
+                <span><i class="fa-solid fa-vault"></i> Bóveda Digital</span>
+                <span style="color: var(--neon-success);">NODO SINCRONIZADO</span>
+            </div>
+            
+            <div class="grid-2">
+                <div>
+                    <div style="font-size: 2.2rem; color: #fff; font-weight: 900;" class="mono-font">
+                        <span id="main-balance-usdt">0.00</span>
+                    </div>
+                    <div style="color: var(--neon-primary); font-size: 0 Rajdhani, sans-serif; font-weight: bold;">USDT_ASSET</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.5); padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size: 0 Rajdhani,sans-serif; color: var(--text-muted);">HASH GENERATION</div>
+                    <div class="mini-chart"></div>
+                    <div style="font-size: 0 Rajdhani,sans-serif; color: var(--neon-success); margin-top: 4px; text-align: right;">30.0 GH/s</div>
                 </div>
             </div>
-            
-            <div style="display: flex; align-items: baseline; gap: 8px; margin: 10px 0;">
-                <span style="font-size: 1.5rem; color: #0088cc; font-weight: 800;">$</span>
-                <span id="main-balance-usdt" class="text-glow" style="font-size: 2.8rem; font-weight: 800; font-family: monospace;">0.00</span>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 5px;">
-                <span style="font-size: 0.75rem; color: #94a3b8;">Billetera de Inversión</span>
-                <span style="font-size: 0.75rem; color: #fff; font-weight: bold; font-family: monospace;">$ 0.00</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding-top: 5px;">
-                <span style="font-size: 0.75rem; color: #94a3b8;">Cartera de Retiros</span>
-                <span style="font-size: 0.75rem; color: #10b981; font-weight: bold; font-family: monospace;">$ 0.00</span>
+
+            <div class="grid-2" style="margin-top: 15px;">
+                <button class="cyber-btn" onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])"><i class="fa-solid fa-bolt"></i> Inyectar Liquidez</button>
+                <button class="cyber-btn" style="background: rgba(0, 255, 157, 0.1); border-color: var(--neon-success); color: var(--neon-success);"><i class="fa-solid fa-recycle"></i> Ciclar Capital</button>
             </div>
         </div>
 
-        <div class="grid-4-col">
-            <div class="quick-action-btn" onclick="switchTab('planes', document.querySelectorAll('.fixed-nav-btn')[1])">
-                <div class="quick-action-icon"><i class="fa-solid fa-wallet"></i></div>
-                <span style="font-size: 0.65rem; color: #94a3b8; font-weight: bold;">Recargar</span>
-            </div>
-            <div class="quick-action-btn">
-                <div class="quick-action-icon" style="background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4);"><i class="fa-solid fa-money-bill-transfer" style="color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.6);"></i></div>
-                <span style="font-size: 0.65rem; color: #94a3b8; font-weight: bold;">Retirar</span>
-            </div>
-            <div class="quick-action-btn" onclick="switchTab('red', document.querySelectorAll('.fixed-nav-btn')[2])">
-                <div class="quick-action-icon" style="background: rgba(244,63,94,0.15); border-color: rgba(244,63,94,0.4);"><i class="fa-solid fa-users" style="color: #f43f5e; text-shadow: 0 0 8px rgba(244,63,94,0.6);"></i></div>
-                <span style="font-size: 0.65rem; color: #94a3b8; font-weight: bold;">Equipo</span>
-            </div>
-            <div class="quick-action-btn" onclick="switchTab('misiones', document.querySelectorAll('.fixed-nav-btn')[3])">
-                <div class="quick-action-icon" style="background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4);"><i class="fa-solid fa-calendar-check" style="color: #f59e0b; text-shadow: 0 0 8px rgba(245,158,11,0.6);"></i></div>
-                <span style="font-size: 0.65rem; color: #94a3b8; font-weight: bold;">Actividad</span>
-            </div>
-        </div>
-
-        <div class="grid-2-col">
-            <div class="mini-stat">
-                <div style="font-size: 0.6rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">RENDIMIENTO DIARIO</div>
-                <div style="color: #10b981; font-size: 1.1rem; font-weight: 800; font-family: monospace;">+5.00% <i class="fa-solid fa-caret-up"></i></div>
-                <div class="fake-chart"></div>
-            </div>
-            <div class="mini-stat">
-                <div style="font-size: 0.6rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">ESTADO DE RED IA</div>
-                <div style="color: #0088cc; font-size: 1.1rem; font-weight: 800; font-family: monospace;">ÓPTIMO</div>
-                <div style="margin-top: 8px; font-size: 0.6rem; color: #64748b; display: flex; flex-direction: column; gap: 3px;">
-                    <div style="display: flex; justify-content: space-between;"><span>Latencia:</span> <span style="color:#fff;">12ms</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span>Nodos:</span> <span style="color:#fff;">1,432</span></div>
+        <div class="cyber-panel" style="padding: 10px;">
+            <div class="panel-header"><span><i class="fa-solid fa-microchip"></i> Inteligencia Operativa</span></div>
+            
+            <div class="grid-3" style="font-family: 'Rajdhani', sans-serif; line-height: 1.4;">
+                <div style="background: rgba(0,0,0,0.4); padding: 8px;">
+                    <div style="font-size: 0 Rajdhani,sans-serif; color: var(--text-muted);">REPORTE DE PROFIT</div>
+                    <div style="color: var(--neon-primary); font-size: 0 Rajdhani,sans-serif; font-weight: 800;">5.00% <i class="fa-solid fa-caret-up"></i></div>
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 8px;">
+                    <div style="font-size: 0 Rajdhani,sans-serif; color: var(--text-muted);">EFICIENCIA RED</div>
+                    <div style="color: var(--neon-success); font-size: 0 Rajdhani,sans-serif; font-weight: 800;">99.8%</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 8px;">
+                    <div style="font-size: 0 Rajdhani,sans-serif; color: var(--text-muted);">MERCADOS ACTIVOS</div>
+                    <div style="color: #fff; font-size: 0 Rajdhani,sans-serif; font-weight: 800;">GLOBAL</div>
                 </div>
             </div>
         </div>
 
-        <div class="cyber-card" style="padding: 12px;">
+        <div class="cyber-panel" style="padding: 12px; margin-bottom: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span style="font-size: 0.65rem; color: #848da0; font-weight: bold;"><i class="fa-solid fa-satellite-dish" style="color: #0088cc;"></i> AI TRADING SIGNAL STREAM</span>
-                <span style="font-size: 0.55rem; background: #10b981; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: bold;">EN VIVO</span>
+                <span style="font-size: 0 Rajdhani,sans-serif; color: var(--neon-primary); font-weight: bold;"><i class="fa-solid fa-satellite-dish" style="color: var(--neon-primary);"></i> REGISTRO DE TRANSACCIONES DE IA</span>
+                <span style="font-size: 0 Rajdhani,sans-serif; background: #000; color: var(--neon-primary); padding: 2px 5px; border-radius: 4px; font-weight: bold; border: 1px solid var(--neon-primary);">LIVE FEED</span>
             </div>
-            <div style="font-size: 0.65rem; font-family: monospace; line-height: 1.8;">
+            <div style="font-size: 0 Rajdhani,sans-serif; font-family: monospace; line-height: 1.8;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
-                    <span style="color: #94a3b8;">[07:12:45] Algoritmo Cuántico</span>
-                    <span style="color: #10b981;">Operación Exitosa</span>
+                    <span style="color: #94a3b8;">[07:12:45] Confirmed: USDT/AI-Pair </span>
+                    <span style="color: var(--neon-success); font-weight: bold;"><i class="fa-solid fa-circle-check"></i> OK</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 4px 0;">
-                    <span style="color: #94a3b8;">[07:11:20] Rebalanceo de Activos</span>
-                    <span style="color: #0088cc;">Ajuste +0.02%</span>
+                    <span style="color: #94a3b8;">[07:11:20] Portfolio Re-balance USD</span>
+                    <span style="color: var(--neon-primary); font-weight: bold;">+ 0.02%</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; padding-top: 4px;">
-                    <span style="color: #94a3b8;">[07:10:05] Cierre de Mercado Asiático</span>
-                    <span style="color: #10b981;">Beneficio Asegurado</span>
+                    <span style="color: #94a3b8;">[07:10:05] Ciclo Asiático Cerrado</span>
+                    <span style="color: var(--neon-success); font-weight: bold;"> प्रॉफिट $</span>
                 </div>
             </div>
         </div>
 
-        <button onclick="claimMining()" style="background: #0088cc; color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0,136,204,0.4); margin-bottom: 10px;">
-            <i class="fa-solid fa-microchip"></i> Sincronizar Recompensas IA
-        </button>
     </section>
 
     <section id="planes" class="view">
-        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-chart-simple" style="color: #0088cc; margin-right: 6px;"></i>Contratos Inteligentes</h2>
-
-        <div class="cyber-card" style="text-align: center; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(13, 17, 28, 0.9) 100%);">
-            <span style="font-size: 0.6rem; color: #10b981; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">CONTRATO MULTIPLICADOR V2</span>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(16,185,129,0.2);">
-                <div>
-                    <span style="font-size: 0.55rem; color: #848da0; display: block; font-weight: bold;">RETORNO DIARIO</span>
-                    <span class="text-glow-green" style="color: #10b981; font-size: 1.2rem; font-weight: 800;">5.0%</span>
-                </div>
-                <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
-                <div>
-                    <span style="font-size: 0.55rem; color: #848da0; display: block; font-weight: bold;">CICLO TOTAL</span>
-                    <span style="color: #fff; font-size: 1.2rem; font-weight: 800;">40 DÍAS</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="cyber-card">
-            <div style="margin-bottom: 10px; font-size: 0.65rem; font-weight: bold; color: #94a3b8;">ASIGNACIÓN DE CAPITAL (Mínimo 0.1 USDT)</div>
-            
-            <div class="modern-input-wrapper">
-                <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" style="width: 24px; height: 24px;">
-                <input type="number" id="invest-amount" placeholder="0.1" min="0.1" step="0.1" value="0.1" oninput="calculateROI()">
-            </div>
-
-            <div style="background: rgba(5, 7, 10, 0.9); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
-                    <span style="color: #848da0; font-size: 0.7rem;"><i class="fa-regular fa-calendar" style="color:#0088cc; width:15px;"></i> Est. Semanal (35%):</span>
-                    <span style="font-weight: 800; color: #fff; font-family: monospace; font-size: 0.8rem;"><span id="calc-weekly">0.03</span> USDT</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
-                    <span style="color: #848da0; font-size: 0.7rem;"><i class="fa-solid fa-calendar-days" style="color:#0088cc; width:15px;"></i> Est. Mensual (150%):</span>
-                    <span style="font-weight: 800; color: #fff; font-family: monospace; font-size: 0.8rem;"><span id="calc-monthly">0.15</span> USDT</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
-                    <span style="color: #94a3b8; font-size: 0.75rem; font-weight: bold;"><i class="fa-solid fa-flag-checkered" style="color: #10b981; width:15px;"></i> Retorno Final (200%):</span>
-                    <span class="text-glow-green" style="font-weight: 800; color: #10b981; font-family: monospace; font-size: 1rem;"><span id="calc-return">0.20</span> USDT</span>
-                </div>
-            </div>
-
-            <button style="background: #0088cc; color: white; border: none; width: 100%; height: 48px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; text-transform: uppercase;" onclick="openPayModal()">
-                <i class="fa-solid fa-bolt"></i> Ejecutar Contrato
-            </button>
-        </div>
+        <div class="cyber-panel"><div class="panel-header"><span>Contratos de Inversión</span></div><p style="font-size:0 Rajdhani,sans-serif; text-align:center; color:var(--text-muted);">[Módulo de Planes aquí...]</p></div>
     </section>
-
     <section id="red" class="view">
-        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-network-wired" style="color: #0088cc; margin-right: 6px;"></i>Arquitectura de Equipo</h2>
-        
-        <div class="grid-2-col">
-            <div class="cyber-card" style="margin-bottom: 0; padding: 12px;">
-                <div style="font-size: 0.65rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">Número total del equipo</div>
-                <div style="font-size: 1.4rem; font-weight: 800; color: #fff;">0</div>
-            </div>
-            <div class="cyber-card" style="margin-bottom: 0; padding: 12px;">
-                <div style="font-size: 0.65rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">Comisión de promoción</div>
-                <div style="font-size: 1.4rem; font-weight: 800; color: #10b981; font-family: monospace;">$0.00</div>
-            </div>
-            <div class="cyber-card" style="margin-bottom: 0; padding: 12px;">
-                <div style="font-size: 0.65rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">Recarga total del equipo</div>
-                <div style="font-size: 1.4rem; font-weight: 800; color: #fff; font-family: monospace;">$0.00</div>
-            </div>
-            <div class="cyber-card" style="margin-bottom: 0; padding: 12px;">
-                <div style="font-size: 0.65rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">Retiros totales equipo</div>
-                <div style="font-size: 1.4rem; font-weight: 800; color: #fff; font-family: monospace;">$0.00</div>
-            </div>
-        </div>
-
-        <div class="grid-3-col" style="margin-top: 15px;">
-            <div class="cyber-card" style="padding: 10px; margin-bottom: 0; background: rgba(5,7,10,0.8);">
-                <div style="font-size: 1rem; font-weight: 800; color: #0088cc; margin-bottom: 10px;">LEV 1</div>
-                <div style="font-size: 0.55rem; color: #848da0; margin-bottom: 2px;">Número de personas</div>
-                <div style="font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 8px;">0</div>
-                <div style="font-size: 0.55rem; color: #848da0; margin-bottom: 2px;">Número válido</div>
-                <div style="font-size: 0.9rem; font-weight: bold; color: #10b981; margin-bottom: 10px;">0</div>
-                <div style="font-size: 0.6rem; color: #0088cc; font-weight: bold; cursor: pointer;">Detalles <i class="fa-solid fa-chevron-right" style="font-size: 0.5rem;"></i></div>
-            </div>
-            <div class="cyber-card" style="padding: 10px; margin-bottom: 0; background: rgba(5,7,10,0.8);">
-                <div style="font-size: 1rem; font-weight: 800; color: #0088cc; margin-bottom: 10px;">LEV 2</div>
-                <div style="font-size: 0.55rem; color: #848da0; margin-bottom: 2px;">Número de personas</div>
-                <div style="font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 8px;">0</div>
-                <div style="font-size: 0.55rem; color: #848da0; margin-bottom: 2px;">Número válido</div>
-                <div style="font-size: 0.9rem; font-weight: bold; color: #10b981; margin-bottom: 10px;">0</div>
-                <div style="font-size: 0.6rem; color: #0088cc; font-weight: bold; cursor: pointer;">Detalles <i class="fa-solid fa-chevron-right" style="font-size: 0.5rem;"></i></div>
-            </div>
-            <div class="cyber-card" style="padding: 10px; margin-bottom: 0; background: rgba(5,7,10,0.8);">
-                <div style="font-size: 1rem; font-weight: 800; color: #0088cc; margin-bottom: 10px;">LEV 3</div>
-                <div style="font-size: 0.55rem; color: #848da0; margin-bottom: 2px;">Número de personas</div>
-                <div style="font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 8px;">0</div>
-                <div style="font-size: 0.55rem; color: #848da0; margin-bottom: 2px;">Número válido</div>
-                <div style="font-size: 0.9rem; font-weight: bold; color: #10b981; margin-bottom: 10px;">0</div>
-                <div style="font-size: 0.6rem; color: #0088cc; font-weight: bold; cursor: pointer;">Detalles <i class="fa-solid fa-chevron-right" style="font-size: 0.5rem;"></i></div>
-            </div>
-        </div>
-
-        <div class="cyber-card" style="margin-top: 15px;">
-            <div style="margin-bottom: 6px; font-size: 0.6rem; font-weight: bold; color: #94a3b8; text-transform: uppercase;">Enlace de Radar Personal</div>
-            <input type="text" id="ref-link" readonly value="Generando enlace único de nodo..." style="margin-bottom: 15px; font-size: 0.75rem; background: rgba(0,0,0,0.6); border: 1px solid rgba(0,136,204,0.4); color: #10b981; padding: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; font-family: monospace; outline: none;">
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button style="background: rgba(0,136,204,0.1); color: #0088cc; border: 1px solid #0088cc; height: 42px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; cursor: pointer;" onclick="copyLink()"><i class="fa-solid fa-copy"></i> Copiar Link</button>
-                <button style="background: linear-gradient(90deg, #f43f5e, #db2777); color: white; border: none; height: 42px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; cursor: pointer; box-shadow: 0 0 15px rgba(244,63,94,0.4);" onclick="copyLink()"><i class="fa-solid fa-share-nodes"></i> COMPARTIR</button>
-            </div>
-        </div>
+        <div class="cyber-panel"><div class="panel-header"><span>Arquitectura de Red</span></div><p style="font-size:0 Rajdhani,sans-serif; text-align:center; color:var(--text-muted);">[Módulo de Referidos aquí...]</p></div>
     </section>
-
     <section id="misiones" class="view">
-        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; color: #fff;"><i class="fa-solid fa-list-check" style="color: #f59e0b; margin-right: 6px;"></i>Centro de Tareas</h2>
-        
-        <div class="cyber-card" style="border-left: 4px solid #10b981;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-                <h3 style="margin: 0 0 5px 0; font-size: 0.95rem; color: #fff; font-weight: 700;">Recompensa por Referido Activo</h3>
-                <span class="text-glow-green" style="color: #10b981; font-weight: 800; font-family: monospace; font-size: 1.1rem;">+1.00 USDT</span>
-            </div>
-            <p style="font-size: 0.75rem; color: #94a3b8; line-height: 1.5; margin-bottom: 10px;">Simplemente invita a un nuevo amigo y que deposite 10 USDT para completar la tarea. Solo tendrás una oportunidad por día.</p>
-            
-            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #848da0; margin-bottom: 2px;">
-                <span>Progreso de invitación</span>
-                <span style="font-family: monospace; font-weight: bold; color: #fff;">0 / 1</span>
-            </div>
-            <div class="progress-container">
-                <div class="progress-fill" style="width: 0%;"></div>
-            </div>
-            <button style="background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid #10b981; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; margin-top: 10px; cursor: pointer;">Ir a invitar</button>
-        </div>
-
-        <div class="cyber-card" style="border-left: 4px solid #0088cc;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-                <h3 style="margin: 0 0 5px 0; font-size: 0.95rem; color: #fff; font-weight: 700;">Compartir en Redes Sociales</h3>
-                <span style="color: #0088cc; font-weight: 800; font-family: monospace; font-size: 1.1rem;">+0.50 USDT</span>
-            </div>
-            <p style="font-size: 0.75rem; color: #94a3b8; line-height: 1.5; margin-bottom: 10px;">Crea y comparte un post sobre nosotros en Facebook, Twitter, Instagram o TikTok y sube la captura de pantalla.</p>
-            
-            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #848da0; margin-bottom: 2px;">
-                <span>Progreso de tarea</span>
-                <span style="font-family: monospace; font-weight: bold; color: #fff;">0 / 1</span>
-            </div>
-            <div class="progress-container">
-                <div class="progress-fill" style="width: 0%; background: linear-gradient(90deg, #3b82f6, #0088cc);"></div>
-            </div>
-            <button style="background: rgba(0,136,204,0.15); color: #0088cc; border: 1px solid #0088cc; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; margin-top: 10px; cursor: pointer;">Subir Comprobante</button>
-        </div>
+        <div class="cyber-panel"><div class="panel-header"><span>Protocolos de Tareas</span></div><p style="font-size:0 Rajdhani,sans-serif; text-align:center; color:var(--text-muted);">[Módulo de Tareas aquí...]</p></div>
     </section>
 
+    <section id="history" class="view">
+        <div class="cyber-panel">
+            <div class="panel-header" style="font-size: 1rem; color: #fff;">
+                <span><i class="fa-solid fa-receipt"></i> Registros de Ledger</span>
+            </div>
+            <div style="font-family: monospace; font-size: 0 Rajdhani,sans-serif; margin-top: 15px;">
+                <div style="border-left: 2px solid var(--neon-success); padding-left: 10px; margin-bottom: 12px;">
+                    <div style="color: var(--text-muted); font-size: 0 Rajdhani,sans-serif;">2026-06-11 05:00:12 UTC</div>
+                    <div style="color: #fff;">Ciclo Diario Acreditado</div>
+                    <div style="color: var(--neon-success); font-weight: bold;">+ 0.50 USDT</div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 <nav class="fixed-nav-bar">
     <button class="fixed-nav-btn active" onclick="switchTab('dashboard', this)">
-        <i class="fa-solid fa-chart-pie"></i> <span>Hogar</span>
+        <i class="fa-solid fa-chart-pie" style="font-size: 1 Rajdhani,sans-serif;"></i> <span>CORE</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('planes', this)">
-        <i class="fa-solid fa-microchip"></i> <span>Minería</span>
+        <i class="fa-solid fa-microchip" style="font-size: 1 Rajdhani,sans-serif;"></i> <span>NODOS</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('red', this)">
-        <i class="fa-solid fa-users"></i> <span>Equipo</span>
+        <i class="fa-solid fa-globe" style="font-size: 1 Rajdhani,sans-serif;"></i> <span>RED</span>
     </button>
     <button class="fixed-nav-btn" onclick="switchTab('misiones', this)">
-        <i class="fa-solid fa-gift"></i> <span>Misiones</span>
+        <i class="fa-solid fa-layer-group" style="font-size: 1 Rajdhani,sans-serif;"></i> <span>MISIONES</span>
     </button>
 </nav>
-
-<div id="payModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,5,8,0.95); z-index:10000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(10px); box-sizing: border-box;">
-    <div class="cyber-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border: 1px solid #0088cc; box-shadow: 0 0 30px rgba(0,136,204,0.2);">
-        <h3 style="margin-top: 0; margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Depósito TRC20</h3>
-        
-        <div style="background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px;">
-            <img id="qr-image" src="" style="width: 160px; height: 160px; display: block;">
-        </div>
-        
-        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">CANTIDAD EXACTA A ENVIAR:</div>
-        <div id="pay-amount-display" style="font-size: 2rem; font-weight: 800; color: #10b981; font-family: monospace; margin-bottom: 15px; text-shadow: 0 0 10px rgba(16,185,129,0.3);">0.00 USDT</div>
-        
-        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">DIRECCIÓN DE DEPÓSITO:</div>
-        <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Cargando...</div>
-        
-        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección</button>
-        <button onclick="closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancelar Transacción</button>
-    </div>
-</div>
 
 <script>
     function switchTab(tabId, buttonElement) {
@@ -525,100 +326,13 @@
         const activeSection = document.getElementById(tabId);
         if (activeSection) activeSection.classList.add('active');
 
-        if (buttonElement) {
+        if (buttonElement && buttonElement.classList.contains('fixed-nav-btn')) {
             const buttons = document.querySelectorAll('.fixed-nav-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
         }
     }
-
-    // Calculadora Avanzada (Semanal, Mensual, Total)
-    function calculateROI() {
-        const inputVal = document.getElementById('invest-amount').value;
-        const amount = parseFloat(inputVal) || 0;
-        
-        // Cálculos en base al 5% diario
-        const daily = amount * 0.05;
-        const weekly = daily * 7;
-        const monthly = daily * 30;
-        const total = amount * 2; // 200% max
-
-        document.getElementById('calc-weekly').textContent = weekly.toFixed(2);
-        document.getElementById('calc-monthly').textContent = monthly.toFixed(2);
-        document.getElementById('calc-return').textContent = total.toFixed(2);
-    }
-
-    // LÓGICA INSTANTÁNEA PARA EL MODAL DE PAGO
-    window.openPayModal = function() {
-        const amount = parseFloat(document.getElementById('invest-amount').value) || 0;
-        
-        // Verificación de mínimo 0.1
-        if (amount < 0.1) {
-            alert("⚠️ El monto mínimo de inversión es de 0.1 USDT");
-            return;
-        }
-
-        // Billetera estática de tu proyecto (CÁMBIALA POR LA TUYA)
-        const myWalletTRC20 = "TYourWalletAddressHere123456789"; 
-
-        // Rellenar datos instantáneamente
-        document.getElementById('pay-amount-display').textContent = amount.toFixed(2) + " USDT";
-        document.getElementById('wallet-address-display').textContent = myWalletTRC20;
-        
-        // Generar QR de forma instantánea usando una API pública (cero lag)
-        document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${myWalletTRC20}&margin=0`;
-
-        // Mostrar el modal
-        document.getElementById('payModal').style.display = "flex";
-    }
-
-    window.closePayModal = function() {
-        document.getElementById('payModal').style.display = "none";
-    }
-
-    window.copyAddress = function() {
-        const walletText = document.getElementById('wallet-address-display').textContent;
-        navigator.clipboard.writeText(walletText).then(() => {
-            alert("¡Dirección copiada con éxito!");
-        });
-    }
-
-    window.copyLink = function() {
-        const refText = document.getElementById('ref-link').value;
-        navigator.clipboard.writeText(refText).then(() => {
-            alert("¡Enlace de referido copiado!");
-        });
-    }
-    
-    window.claimMining = function() {
-        alert("¡Sincronizando con nodos de IA! Recompensas actualizadas.");
-    }
-
-    // Inicialización al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto
-        
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
-
-            const user = tg.initDataUnsafe?.user;
-            if (user) {
-                document.getElementById('user-full-name').textContent = `${user.first_name} ${user.last_name || ''}`.trim();
-                document.getElementById('user-id').textContent = `ID: ${user.id}`;
-                if (user.photo_url) {
-                    document.getElementById('user-pic').src = user.photo_url;
-                }
-                const botUsername = "FutNowbot"; 
-                document.getElementById('ref-link').value = `https://t.me/${botUsername}?start=${user.id}`;
-            }
-        }
-    });
 </script>
-
-<script src="ui.js"></script>
-<script type="module" src="main.js"></script>
 
 </body>
 </html>
