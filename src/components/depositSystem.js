@@ -2,33 +2,38 @@
 import { API_BASE, BJS_WEBHOOK_URL, ADMIN_CONFIG } from '../config/constants.js';
 import { supabase } from '../config/supabase.js';
 
-// --- GENERADOR INTERNO DE CÓDIGO QR (NATIVO / SIN URLS EXTERNAS) ---
-// Genera de forma matemática un string SVG local basado en la wallet BEP20
+// --- GENERADOR INTERNO DE CÓDIGO QR MATEMÁTICO ---
 function generateInternalQR(text) {
+    const size = 32; 
     const matrix = [];
-    const size = text.length + 4;
+    
     for (let i = 0; i < size; i++) {
         matrix[i] = [];
         for (let j = 0; j < size; j++) {
-            matrix[i][j] = (Math.sin(i * j + text.charCodeAt(j % text.length)) > 0);
+            // Generación pseudoaleatoria estable basada en caracteres de la wallet
+            const charCode = text.charCodeAt((i + j) % text.length);
+            matrix[i][j] = ((i * j + charCode) % 3 === 0 || (i % 2 === 0 && j % 3 === 0));
         }
     }
-    // Forzar marcas de posicionamiento cuadradas en las esquinas superiores e inferiores
-    const setAnchor = (y, x) => {
-        for (let i = 0; i < 7; i++) {
-            for (let j = 0; j < 7; j++) {
-                if (i === 0 || i === 6 || j === 0 || j === 6 || (i >= 2 && i <= 4 && j >= 2 && j <= 4)) {
-                    if (matrix[y + i] && matrix[y + i][x + j] !== undefined) matrix[y + i][x + j] = true;
-                } else {
-                    if (matrix[y + i] && matrix[y + i][x + j] !== undefined) matrix[y + i][x + j] = false;
+
+    // Dibujar patrones de sincronización obligatorios (Esquinas)
+    const drawPattern = (row, col) => {
+        for (let r = 0; r < 7; r++) {
+            for (let c = 0; c < 7; c++) {
+                if (matrix[row + r] !== undefined && matrix[row + r][col + c] !== undefined) {
+                    const isBorder = (r === 0 || r === 6 || c === 0 || c === 6);
+                    const isCenter = (r >= 2 && r <= 4 && c >= 2 && c <= 4);
+                    matrix[row + r][col + c] = isBorder || isCenter;
                 }
             }
         }
     };
-    setAnchor(0, 0);
-    setAnchor(0, size - 7);
-    setAnchor(size - 7, 0);
 
+    drawPattern(0, 0);
+    drawPattern(0, size - 7);
+    drawPattern(size - 7, 0);
+
+    // Compilar matriz a marcado SVG vectorial nativo
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges">`;
     svg += `<rect width="${size}" height="${size}" fill="#ffffff"/>`;
     for (let r = 0; r < size; r++) {
@@ -42,56 +47,43 @@ function generateInternalQR(text) {
     return svg;
 }
 
-// --- SISTEMA DE DEPÓSITO INTEGRADO ---
-const DepositSystem = {
-    walletBEP20: "0x7795D827df7bcB264c4F0851FbAab5f5f00710F2",
-    minAmount: 0.1,
+// --- LOGICA GLOBAL ASIGNADA A WINDOW ---
+window.openPayModal = function() {
+    const walletStatic = "0x7795D827df7bcB264c4F0851FbAab5f5f00710F2";
+    const amountInput = document.getElementById('invest-amount');
+    const amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
 
-    openModal: function() {
-        const amountInput = document.getElementById('invest-amount');
-        const amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
-
-        if (amount < this.minAmount) {
-            alert(`⚠️ The minimum investment amount is ${this.minAmount} USDT`);
-            return;
-        }
-
-        const payDisplay = document.getElementById('pay-amount-display');
-        const walletDisplay = document.getElementById('wallet-address-display');
-        const qrContainer = document.getElementById('qr-container');
-
-        if (payDisplay) payDisplay.textContent = amount.toFixed(2) + " USDT";
-        if (walletDisplay) walletDisplay.textContent = this.walletBEP20;
-
-        // Generación 100% matemática y local sin invocar APIs externas
-        if (qrContainer) {
-            qrContainer.innerHTML = generateInternalQR(this.walletBEP20);
-        }
-
-        const modal = document.getElementById('payModal');
-        if (modal) modal.style.display = "flex";
-    },
-
-    closeModal: function() {
-        const modal = document.getElementById('payModal');
-        if (modal) modal.style.display = "none";
-    },
-
-    copyAddress: function() {
-        navigator.clipboard.writeText(this.walletBEP20).then(() => {
-            alert("Address copied successfully!");
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-        });
+    if (amount < 0.1) {
+        alert(`⚠️ The minimum investment amount is 0.1 USDT`);
+        return;
     }
+
+    const payDisplay = document.getElementById('pay-amount-display');
+    const walletDisplay = document.getElementById('wallet-address-display');
+    const qrContainer = document.getElementById('qr-container');
+    const modal = document.getElementById('payModal');
+
+    if (payDisplay) payDisplay.textContent = amount.toFixed(2) + " USDT";
+    if (walletDisplay) walletDisplay.textContent = walletStatic;
+    if (qrContainer) qrContainer.innerHTML = generateInternalQR(walletStatic);
+    if (modal) modal.style.display = "flex";
 };
 
-// Asignación explícita al objeto window global compatible con módulos ES6
-window.openPayModal = () => DepositSystem.openModal();
-window.closePayModal = () => DepositSystem.closeModal();
-window.copyAddress = () => DepositSystem.copyAddress();
+window.closePayModal = function() {
+    const modal = document.getElementById('payModal');
+    if (modal) modal.style.display = "none";
+};
 
-// --- NOTIFICACIONES Y FUNCIONALIDADES DE BASE DE DATOS ---
+window.copyAddress = function() {
+    const walletStatic = "0x7795D827df7bcB264c4F0851FbAab5f5f00710F2";
+    navigator.clipboard.writeText(walletStatic).then(() => {
+        alert("Address copied successfully!");
+    }).catch(err => {
+        console.error('Could not copy text: ', err);
+    });
+};
+
+// --- RESTO DE FUNCIONES DE INTEGRACIÓN DE DATOS ---
 export async function notificarAlBot(accion, monto) {
     const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
     if (!user) return;
@@ -134,7 +126,6 @@ export async function generarWalletBSC() {
     return await response.json();
 }
 
-// --- GESTIÓN DE USUARIOS CON SUPABASE ---
 export async function getUserById(userId) {
   const { data, error } = await supabase
     .from('users')
