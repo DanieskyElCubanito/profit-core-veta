@@ -473,39 +473,25 @@
     }
 
     // LÓGICA INSTANTÁNEA PARA EL MODAL DE PAGO
-    window.openPayModal = function() {
-        const amount = parseFloat(document.getElementById('invest-amount').value) || 0;
+    <div id="payModal" style="display: none;" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Deposit USDT (BEP20)</h2>
         
-        // Verificación de mínimo 0.1
-        if (amount < 0.1) {
-            alert("⚠️ El monto mínimo de inversión es de 0.1 USDT");
-            return;
-        }
-
-        // Billetera estática de tu proyecto (CÁMBIALA POR LA TUYA)
-        const myWalletTRC20 = "TYourWalletAddressHere123456789"; 
-
-        // Rellenar datos instantáneamente
-        document.getElementById('pay-amount-display').textContent = amount.toFixed(2) + " USDT";
-        document.getElementById('wallet-address-display').textContent = myWalletTRC20;
+        <p>Amount to pay: <span id="pay-amount-display" style="font-weight: bold;">0.00 USDT</span></p>
         
-        // Generar QR de forma instantánea usando una API pública (cero lag)
-        document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${myWalletTRC20}&margin=0`;
+        <div class="qr-container">
+            <img id="qr-image" src="" alt="Deposit QR Code" />
+        </div>
+        
+        <div class="wallet-info">
+            <p>Send precisely via <strong>BEP20</strong> network to:</p>
+            <p id="wallet-address-display" class="wallet-address"></p>
+            <button onclick="copyAddress()" class="btn-copy">Copy Address</button>
+        </div>
 
-        // Mostrar el modal
-        document.getElementById('payModal').style.display = "flex";
-    }
-
-    window.closePayModal = function() {
-        document.getElementById('payModal').style.display = "none";
-    }
-
-    window.copyAddress = function() {
-        const walletText = document.getElementById('wallet-address-display').textContent;
-        navigator.clipboard.writeText(walletText).then(() => {
-            alert("¡Dirección copiada con éxito!");
-        });
-    }
+        <button onclick="closePayModal()" class="btn-close">Close</button>
+    </div>
+</div>
 
     window.copyLink = function() {
         const refText = document.getElementById('ref-link').value;
@@ -520,7 +506,7 @@
 
     // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", function() {
-        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto
+        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto si
         
         const tg = window.Telegram?.WebApp;
         if (tg) {
@@ -541,6 +527,7 @@
     });
 </script>
 
+<script src="src/components/depositSystem.js"></script>
 <script src="ui.js"></script>
 <script type="module" src="main.js"></script>
 
