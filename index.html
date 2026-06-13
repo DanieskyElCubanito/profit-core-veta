@@ -428,7 +428,7 @@
         <h3 style="margin-top: 0; margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Deposit USDT (BEP20)</h3>
 
         <div style="background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px;">
-            <img id="qr-image" src="" style="width: 160px; height: 160px; display: block;" alt="Deposit QR Code">
+            <div id="qr-container" style="width: 160px; height: 160px; display: flex; justify-content: center; align-items: center;"></div>
         </div>
 
         <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">EXACT AMOUNT TO SEND:</div>
@@ -437,8 +437,8 @@
         <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">BEP20 DEPOSIT ADDRESS:</div>
         <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Loading...</div>
 
-        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copy Address</button>
-        <button onclick="closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
+        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="window.copyAddress()"><i class="fa-solid fa-copy"></i> Copy Address</button>
+        <button onclick="window.closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
     </div>
 </div>
 
@@ -458,7 +458,7 @@
 
     // Calculadora Avanzada (Semanal, Mensual, Total)
     function calculateROI() {
-        const inputVal = document.getElementById('invest-amount').value;
+        const inputVal = document.getElementById('invest-amount')?.value;
         const amount = parseFloat(inputVal) || 0;
 
         // Cálculos en base al 5% diario
@@ -467,13 +467,18 @@
         const monthly = daily * 30;
         const total = amount * 2; // 200% max
 
-        document.getElementById('calc-weekly').textContent = weekly.toFixed(2);
-        document.getElementById('calc-monthly').textContent = monthly.toFixed(2);
-        document.getElementById('calc-return').textContent = total.toFixed(2);
+        const wEl = document.getElementById('calc-weekly');
+        const mEl = document.getElementById('calc-monthly');
+        const rEl = document.getElementById('calc-return');
+
+        if (wEl) wEl.textContent = weekly.toFixed(2);
+        if (mEl) mEl.textContent = monthly.toFixed(2);
+        if (rEl) rEl.textContent = total.toFixed(2);
     }
 
     window.copyLink = function() {
-        const refText = document.getElementById('ref-link').value;
+        const refText = document.getElementById('ref-link')?.value;
+        if (!refText) return;
         navigator.clipboard.writeText(refText).then(() => {
             alert("Referral link copied successfully!");
         });
@@ -494,19 +499,24 @@
 
             const user = tg.initDataUnsafe?.user;
             if (user) {
-                document.getElementById('user-full-name').textContent = `${user.first_name} ${user.last_name || ''}`.trim();
-                document.getElementById('user-id').textContent = `ID: ${user.id}`;
-                if (user.photo_url) {
-                    document.getElementById('user-pic').src = user.photo_url;
+                const nameEl = document.getElementById('user-full-name');
+                const idEl = document.getElementById('user-id');
+                const picEl = document.getElementById('user-pic');
+                const refEl = document.getElementById('ref-link');
+
+                if (nameEl) nameEl.textContent = `${user.first_name} ${user.last_name || ''}`.trim();
+                if (idEl) idEl.textContent = `ID: ${user.id}`;
+                if (picEl && user.photo_url) {
+                    picEl.src = user.photo_url;
                 }
                 const botUsername = "ProfitGPTGTBot"; 
-                document.getElementById('ref-link').value = `https://t.me/${botUsername}?start=${user.id}`;
+                if (refEl) refEl.value = `https://t.me/${botUsername}?start=${user.id}`;
             }
         }
     });
 </script>
 
-<script src="src/components/depositSystem.js"></script>
+<script type="module" src="src/components/depositSystem.js"></script>
 <script src="ui.js"></script>
 <script type="module" src="main.js"></script>
 
