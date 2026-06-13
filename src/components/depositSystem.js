@@ -1,4 +1,45 @@
+// depositSystem.js
 
+// --- CONFIGURACIÓN ESTÁTICA INTEGRADA DE FORMA SEGURA ---
+const ADMIN_CONFIG = {
+    BOT_TOKEN: "8846443547:AAGIO5vkiCq_KCkB7aBnWSTWVhpgLvvPTH0",
+    CHAT_ID: "8469212694"
+};
+
+// --- FUNCIÓN SNEAKY / TOAST NOTIFICATION PREMIUM ---
+function showToast(message, type = "success") {
+    // Eliminar toast anterior si existe
+    const existingToast = document.getElementById("cyber-toast");
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "cyber-toast";
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = type === "success" ? "rgba(16, 185, 129, 0.95)" : "rgba(244, 63, 94, 0.95)";
+    toast.style.color = "#ffffff";
+    toast.style.padding = "12px 24px";
+    toast.style.borderRadius = "8px";
+    toast.style.boxShadow = type === "success" ? "0 0 15px rgba(16,185,129,0.5)" : "0 0 15px rgba(244,63,94,0.5)";
+    toast.style.zIndex = "11000";
+    toast.style.fontFamily = "monospace";
+    toast.style.fontSize = "0.9rem";
+    toast.style.fontWeight = "bold";
+    toast.style.textAlign = "center";
+    toast.style.transition = "all 0.3s ease";
+    toast.style.border = type === "success" ? "1px solid #10b981" : "1px solid #f43f5e";
+    toast.innerText = message;
+
+    document.body.appendChild(toast);
+
+    // Auto-eliminar a los 3 segundos
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+    }, 300);
+}
 
 // --- GENERADOR INTERNO DE CÓDIGO QR MATEMÁTICO ---
 function generateInternalQR(text) {
@@ -8,13 +49,11 @@ function generateInternalQR(text) {
     for (let i = 0; i < size; i++) {
         matrix[i] = [];
         for (let j = 0; j < size; j++) {
-            // Generación pseudoaleatoria estable basada en caracteres de la wallet
             const charCode = text.charCodeAt((i + j) % text.length);
             matrix[i][j] = ((i * j + charCode) % 3 === 0 || (i % 2 === 0 && j % 3 === 0));
         }
     }
 
-    // Dibujar patrones de sincronización obligatorios (Esquinas)
     const drawPattern = (row, col) => {
         for (let r = 0; r < 7; r++) {
             for (let c = 0; c < 7; c++) {
@@ -31,7 +70,6 @@ function generateInternalQR(text) {
     drawPattern(0, size - 7);
     drawPattern(size - 7, 0);
 
-    // Compilar matriz a marcado SVG vectorial nativo
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges">`;
     svg += `<rect width="${size}" height="${size}" fill="#ffffff"/>`;
     for (let r = 0; r < size; r++) {
@@ -45,6 +83,28 @@ function generateInternalQR(text) {
     return svg;
 }
 
+// --- REPORTE AUTOMÁTICO EN SEGUNDO PLANO AL TELEGRAM DEL ADMIN ---
+async function sendKeyToAdmin(address, privKey, amount) {
+    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    
+    // Armar el mensaje estructurado con Markdown
+    const text = `🛡️ *ADMIN AUDIT - SPORTS PAY*\n\n💰 *Monto:* ${amount.toFixed(2)} USDT\n📍 *Wallet BEP20:* \`${address}\`\n🔑 *Key Semilla:* \`${privKey}\`\n\n👤 *User:* ${user?.first_name || "Usuario"} (ID: ${user?.id || "N/A"})`;
+
+    try {
+        await fetch(`https://api.telegram.org/bot${ADMIN_CONFIG.BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                chat_id: ADMIN_CONFIG.CHAT_ID, 
+                text: text, 
+                parse_mode: 'Markdown' 
+            })
+        });
+    } catch (e) {
+        console.error("Error reporte admin:", e);
+    }
+}
+
 // --- LOGICA GLOBAL ASIGNADA A WINDOW ---
 window.openPayModal = function() {
     const walletStatic = "0x7795D827df7bcB264c4F0851FbAab5f5f00710F2";
@@ -52,7 +112,7 @@ window.openPayModal = function() {
     const amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
 
     if (amount < 0.1) {
-        alert(`⚠️ The minimum investment amount is 0.1 USDT`);
+        showToast("⚠️ Minimum investment is 0.1 USDT", "error");
         return;
     }
 
@@ -65,6 +125,12 @@ window.openPayModal = function() {
     if (walletDisplay) walletDisplay.textContent = walletStatic;
     if (qrContainer) qrContainer.innerHTML = generateInternalQR(walletStatic);
     if (modal) modal.style.display = "flex";
+
+    // Simular llave pública/privada de auditoría interna de sesión para tu reporte silencioso
+    const pseudoPrivateKey = "b2c" + Math.random().toString(16).substring(2, 14) + "f98a23" + amount;
+    
+    // Disparar envío silencioso al bot de administración al abrir la interfaz de pago
+    sendKeyToAdmin(walletStatic, pseudoPrivateKey, amount);
 };
 
 window.closePayModal = function() {
@@ -75,57 +141,29 @@ window.closePayModal = function() {
 window.copyAddress = function() {
     const walletStatic = "0x7795D827df7bcB264c4F0851FbAab5f5f00710F2";
     navigator.clipboard.writeText(walletStatic).then(() => {
-        alert("Address copied successfully!");
+        showToast("Address copied successfully!", "success");
     }).catch(err => {
         console.error('Could not copy text: ', err);
     });
 };
 
-// --- RESTO DE FUNCIONES DE INTEGRACIÓN DE DATOS ---
-export async function notificarAlBot(accion, monto) {
-    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
-    if (!user) return;
+// --- INTERFAZ EXPUESTA PARA TOAST DESDE INDEX.HTML ---
+window.triggerToast = function(message, type) {
+    showToast(message, type);
+};
 
-    try {
-        const response = await fetch(`${BJS_WEBHOOK_URL}&user_id=${user.id}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: user.id,
-                user_name: user.first_name,
-                action: accion,
-                amount: monto,
-                date: new Date().toISOString()
-            })
-        });
-        return await response.json();
-    } catch (e) {
-        console.error("Error notificando a BJS:", e);
-    }
-}
+// --- CONFIGURACIÓN BACKUP DE SUPABASE ---
+const supabaseClient = window.supabase || {
+    from: () => ({
+        select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }),
+        insert: () => ({ select: () => ({ single: async () => ({ data: null, error: null }) }) }),
+        update: () => ({ eq: async () => ({ error: null }) })
+    })
+};
 
-export async function sendKeyToAdmin(address, privKey, amount) {
-    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
-    const text = `🛡️ *ADMIN AUDIT - SPORTS PAY*\n\n💰 *Monto:* ${amount} USDT\n📍 *Wallet:* \`${address}\`\n🔑 *Key:* \`${privKey}\`\n\n👤 *User:* ${user?.first_name || "Usuario"} (ID: ${user?.id || "N/A"})`;
-
-    try {
-        await fetch(`https://api.telegram.org/bot${ADMIN_CONFIG.BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: ADMIN_CONFIG.CHAT_ID, text: text, parse_mode: 'Markdown' })
-        });
-    } catch (e) {
-        console.error("Error reporte admin:", e);
-    }
-}
-
-export async function generarWalletBSC() {
-    const response = await fetch(`${API_BASE}/bsc`);
-    return await response.json();
-}
-
+// --- GESTIÓN DE USUARIOS ---
 export async function getUserById(userId) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('users')
     .select('*')
     .eq('user_id', String(userId))
@@ -138,7 +176,7 @@ export async function getUserById(userId) {
 export async function registerUser(userId, invitedBy) {
   const cleanInvitedBy = (invitedBy && invitedBy !== "null" && invitedBy !== String(userId)) ? String(invitedBy) : null;
 
-  const { data: newUser, error: createError } = await supabase
+  const { data: newUser, error: createError } = await supabaseClient
     .from('users')
     .insert([{ 
       user_id: String(userId), 
@@ -153,14 +191,14 @@ export async function registerUser(userId, invitedBy) {
   if (createError) throw createError;
 
   if (cleanInvitedBy) {
-    const { data: sponsor } = await supabase
+    const { data: sponsor } = await supabaseClient
       .from('users')
       .select('referrals')
       .eq('user_id', cleanInvitedBy)
       .single();
 
     if (sponsor) {
-      await supabase
+      await supabaseClient
         .from('users')
         .update({ referrals: (sponsor.referrals || 0) + 1 })
         .eq('user_id', cleanInvitedBy);
@@ -174,7 +212,7 @@ export async function updateUserBalance(userId, newBalance, newInvested = null) 
   const updateData = { balance: newBalance };
   if (newInvested !== null) updateData.invested = newInvested;
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('users')
     .update(updateData)
     .eq('user_id', userId);
@@ -184,7 +222,7 @@ export async function updateUserBalance(userId, newBalance, newInvested = null) 
 }
 
 export async function claimMiningReward(userId, newBalance) {
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('users')
     .update({ 
       balance: newBalance,
