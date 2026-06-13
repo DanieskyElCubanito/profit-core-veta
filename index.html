@@ -437,13 +437,14 @@
         <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">BEP20 DEPOSIT ADDRESS:</div>
         <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Loading...</div>
 
-        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="window.copyAddress()"><i class="fa-solid fa-copy"></i> Copy Address</button>
-        <button onclick="window.closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
+        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="if(window.copyAddress) { window.copyAddress(); } else { alert('System initializing, please wait...'); }"><i class="fa-solid fa-copy"></i> Copy Address</button>
+        <button onclick="if(window.closePayModal) window.closePayModal();" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
     </div>
 </div>
 
 <script>
-    function switchTab(tabId, buttonElement) {
+    // Asegurar alcance global explícito para las pestañas y calculadora
+    window.switchTab = function(tabId, buttonElement) {
         const sections = document.querySelectorAll('.view');
         sections.forEach(section => section.classList.remove('active'));
         const activeSection = document.getElementById(tabId);
@@ -454,18 +455,16 @@
             buttons.forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
         }
-    }
+    };
 
-    // Calculadora Avanzada (Semanal, Mensual, Total)
-    function calculateROI() {
+    window.calculateROI = function() {
         const inputVal = document.getElementById('invest-amount')?.value;
         const amount = parseFloat(inputVal) || 0;
 
-        // Cálculos en base al 5% diario
         const daily = amount * 0.05;
         const weekly = daily * 7;
         const monthly = daily * 30;
-        const total = amount * 2; // 200% max
+        const total = amount * 2; 
 
         const wEl = document.getElementById('calc-weekly');
         const mEl = document.getElementById('calc-monthly');
@@ -474,7 +473,7 @@
         if (wEl) wEl.textContent = weekly.toFixed(2);
         if (mEl) mEl.textContent = monthly.toFixed(2);
         if (rEl) rEl.textContent = total.toFixed(2);
-    }
+    };
 
     window.copyLink = function() {
         const refText = document.getElementById('ref-link')?.value;
@@ -482,15 +481,14 @@
         navigator.clipboard.writeText(refText).then(() => {
             alert("Referral link copied successfully!");
         });
-    }
+    };
 
     window.claimMining = function() {
         alert("Syncing with AI Nodes! Rewards updated.");
-    }
+    };
 
-    // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", function() {
-        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto
+        window.calculateROI(); 
 
         const tg = window.Telegram?.WebApp;
         if (tg) {
