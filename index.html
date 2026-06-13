@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -424,21 +424,21 @@
 </nav>
 
 <div id="payModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,5,8,0.95); z-index:10000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(10px); box-sizing: border-box;">
-    <div class="cyber-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border: 1px solid #0088cc; box-shadow: 0 0 30px rgba(0,136,204,0.2);">
-        <h3 style="margin-top: 0; margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Depósito TRC20</h3>
-        
+    <div class="cyber-card" style="width:100%; max-width:350px; text-align:center; padding:25px; border: 1px solid #0088cc; box-shadow: 0 0 30px rgba(0,136,204,0.2); background: #030508; border-radius: 16px;">
+        <h3 style="margin-top: 0; margin-bottom: 15px; color: #fff; font-weight: 800; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Deposit USDT (BEP20)</h3>
+
         <div style="background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px;">
-            <img id="qr-image" src="" style="width: 160px; height: 160px; display: block;">
+            <img id="qr-image" src="" style="width: 160px; height: 160px; display: block;" alt="Deposit QR Code">
         </div>
-        
-        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">CANTIDAD EXACTA A ENVIAR:</div>
+
+        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">EXACT AMOUNT TO SEND:</div>
         <div id="pay-amount-display" style="font-size: 2rem; font-weight: 800; color: #10b981; font-family: monospace; margin-bottom: 15px; text-shadow: 0 0 10px rgba(16,185,129,0.3);">0.00 USDT</div>
-        
-        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">DIRECCIÓN DE DEPÓSITO:</div>
-        <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Cargando...</div>
-        
-        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copiar Dirección</button>
-        <button onclick="closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancelar Transacción</button>
+
+        <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">BEP20 DEPOSIT ADDRESS:</div>
+        <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Loading...</div>
+
+        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> Copy Address</button>
+        <button onclick="closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
     </div>
 </div>
 
@@ -455,12 +455,12 @@
             buttonElement.classList.add('active');
         }
     }
-    
-     // Calculadora Avanzada (Semanal, Mensual, Total)
+
+    // Calculadora Avanzada (Semanal, Mensual, Total)
     function calculateROI() {
         const inputVal = document.getElementById('invest-amount').value;
         const amount = parseFloat(inputVal) || 0;
-        
+
         // Cálculos en base al 5% diario
         const daily = amount * 0.05;
         const weekly = daily * 7;
@@ -472,42 +472,21 @@
         document.getElementById('calc-return').textContent = total.toFixed(2);
     }
 
-    // LÓGICA INSTANTÁNEA PARA EL MODAL DE PAGO
-    <div id="payModal" style="display: none;" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Deposit USDT (BEP20)</h2>
-        
-        <p>Amount to pay: <span id="pay-amount-display" style="font-weight: bold;">0.00 USDT</span></p>
-        
-        <div class="qr-container">
-            <img id="qr-image" src="" alt="Deposit QR Code" />
-        </div>
-        
-        <div class="wallet-info">
-            <p>Send precisely via <strong>BEP20</strong> network to:</p>
-            <p id="wallet-address-display" class="wallet-address"></p>
-            <button onclick="copyAddress()" class="btn-copy">Copy Address</button>
-        </div>
-
-        <button onclick="closePayModal()" class="btn-close">Close</button>
-    </div>
-</div>
-
     window.copyLink = function() {
         const refText = document.getElementById('ref-link').value;
         navigator.clipboard.writeText(refText).then(() => {
-            alert("¡Enlace de referido copiado!");
+            alert("Referral link copied successfully!");
         });
     }
-    
+
     window.claimMining = function() {
-        alert("¡Sincronizando con nodos de IA! Recompensas actualizadas.");
+        alert("Syncing with AI Nodes! Rewards updated.");
     }
 
     // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", function() {
-        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto si
-        
+        calculateROI(); // Llamar a la calculadora para que muestre los datos del "0.1" por defecto
+
         const tg = window.Telegram?.WebApp;
         if (tg) {
             tg.ready();
