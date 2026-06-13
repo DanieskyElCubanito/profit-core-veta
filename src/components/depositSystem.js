@@ -1,6 +1,4 @@
-// depositSystem.js
-import { API_BASE, BJS_WEBHOOK_URL, ADMIN_CONFIG } from '../config/constants.js';
-import { supabase } from '../config/supabase.js';
+
 
 // --- GENERADOR INTERNO DE CÓDIGO QR MATEMÁTICO ---
 function generateInternalQR(text) {
