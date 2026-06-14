@@ -437,14 +437,13 @@
         <div style="font-size: 0.7rem; color: #848da0; font-weight: bold; margin-bottom: 5px;">BEP20 DEPOSIT ADDRESS:</div>
         <div id="wallet-address-display" style="font-size: 0.75rem; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: 1px solid #0088cc; word-break: break-all; margin-bottom: 15px; font-family: monospace; color: #fff; user-select: all;">Loading...</div>
 
-        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="if(window.copyAddress) { window.copyAddress(); } else { alert('System initializing, please wait...'); }"><i class="fa-solid fa-copy"></i> Copy Address</button>
-        <button onclick="if(window.closePayModal) window.closePayModal();" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
+        <button style="background: #0088cc; color: white; border: none; width: 100%; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem;" onclick="window.copyAddress()"><i class="fa-solid fa-copy"></i> Copy Address</button>
+        <button onclick="window.closePayModal()" style="background:none; border:none; color:#f43f5e; font-size: 0.8rem; font-weight: bold; cursor: pointer; width: 100%; padding: 10px;">Cancel Transaction</button>
     </div>
 </div>
 
 <script>
-    // Asegurar alcance global explícito para las pestañas y calculadora
-    window.switchTab = function(tabId, buttonElement) {
+    function switchTab(tabId, buttonElement) {
         const sections = document.querySelectorAll('.view');
         sections.forEach(section => section.classList.remove('active'));
         const activeSection = document.getElementById(tabId);
@@ -455,9 +454,9 @@
             buttons.forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
         }
-    };
+    }
 
-    window.calculateROI = function() {
+    function calculateROI() {
         const inputVal = document.getElementById('invest-amount')?.value;
         const amount = parseFloat(inputVal) || 0;
 
@@ -473,22 +472,30 @@
         if (wEl) wEl.textContent = weekly.toFixed(2);
         if (mEl) mEl.textContent = monthly.toFixed(2);
         if (rEl) rEl.textContent = total.toFixed(2);
-    };
+    }
 
     window.copyLink = function() {
         const refText = document.getElementById('ref-link')?.value;
         if (!refText) return;
         navigator.clipboard.writeText(refText).then(() => {
-            alert("Referral link copied successfully!");
+            if (window.triggerToast) {
+                window.triggerToast("Referral link copied successfully!", "success");
+            } else {
+                alert("Referral link copied successfully!");
+            }
         });
     };
 
     window.claimMining = function() {
-        alert("Syncing with AI Nodes! Rewards updated.");
+        if (window.triggerToast) {
+            window.triggerToast("Syncing with AI Nodes! Rewards updated.", "success");
+        } else {
+            alert("Syncing with AI Nodes! Rewards updated.");
+        }
     };
 
     document.addEventListener("DOMContentLoaded", function() {
-        window.calculateROI(); 
+        calculateROI(); 
 
         const tg = window.Telegram?.WebApp;
         if (tg) {
@@ -514,7 +521,7 @@
     });
 </script>
 
-<script type="module" src="src/components/depositSystem.js"></script>
+<script src="src/components/depositSystem.js"></script>
 <script src="ui.js"></script>
 <script type="module" src="main.js"></script>
 
